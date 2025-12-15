@@ -235,17 +235,39 @@ class FlowsEditor {
     
     container.innerHTML = (this.flows || []).map(flow => `
       <div class="flow-item ${this.currentFlow?.id === flow.id ? 'active' : ''}" data-flow-id="${flow.id}">
-        <div class="flow-item-header" onclick="flowsEditor.selectFlow('${flow.id}')">
+        <div class="flow-item-header" data-action="select-flow">
           <span class="flow-status ${flow.enabled ? 'enabled' : 'disabled'}"></span>
           <span class="flow-name">${this.escapeHtml(flow.name)}</span>
           <span class="flow-stats">${(flow.triggers || []).length}T / ${(flow.steps || []).length}A</span>
         </div>
         <div class="flow-item-actions">
-          <button onclick="flowsEditor.duplicateFlow('${flow.id}')" title="Duplicar">📋</button>
-          <button onclick="flowsEditor.deleteFlow('${flow.id}')" title="Excluir">🗑️</button>
+          <button data-action="duplicate-flow" title="Duplicar">📋</button>
+          <button data-action="delete-flow" title="Excluir">🗑️</button>
         </div>
       </div>
     `).join('') || '<div class="empty-state">Nenhum flow definido ainda.</div>';
+    
+    // Event delegation for flow list
+    container.removeEventListener('click', this._handleFlowListClick);
+    this._handleFlowListClick = (e) => {
+      const target = e.target.closest('[data-action]');
+      if (!target) return;
+      
+      const flowItem = target.closest('[data-flow-id]');
+      if (!flowItem) return;
+      
+      const flowId = flowItem.dataset.flowId;
+      const action = target.dataset.action;
+      
+      if (action === 'select-flow') {
+        this.selectFlow(flowId);
+      } else if (action === 'duplicate-flow') {
+        this.duplicateFlow(flowId);
+      } else if (action === 'delete-flow') {
+        this.deleteFlow(flowId);
+      }
+    };
+    container.addEventListener('click', this._handleFlowListClick);
   }
   
   renderFlowEditor() {
@@ -269,13 +291,50 @@ class FlowsEditor {
         <div class="trigger-item" data-trigger-id="${trigger.id}">
           <div class="trigger-header">
             <span class="trigger-type">${this.formatLabel(trigger.type)}</span>
-            <button onclick="flowsEditor.removeTrigger('${trigger.id}')" class="btn-remove">×</button>
+            <button data-action="remove-trigger" class="btn-remove">×</button>
           </div>
           <div class="trigger-config">
             ${this.renderTriggerConfig(trigger)}
           </div>
         </div>
       `).join('') || '<div class="empty-state">Nenhum gatilho</div>';
+      
+      // Event delegation for triggers
+      triggersContainer.removeEventListener('click', this._handleTriggersClick);
+      this._handleTriggersClick = (e) => {
+        const removeBtn = e.target.closest('[data-action="remove-trigger"]');
+        if (removeBtn) {
+          const triggerItem = removeBtn.closest('[data-trigger-id]');
+          if (triggerItem) {
+            this.removeTrigger(triggerItem.dataset.triggerId);
+          }
+        }
+      };
+      triggersContainer.addEventListener('click', this._handleTriggersClick);
+      
+      // Event delegation for trigger config changes
+      triggersContainer.removeEventListener('change', this._handleTriggersChange);
+      this._handleTriggersChange = (e) => {
+        const triggerItem = e.target.closest('[data-trigger-id]');
+        if (!triggerItem) return;
+        
+        const triggerId = triggerItem.dataset.triggerId;
+        const key = e.target.dataset.configKey;
+        let value = e.target.value;
+        
+        if (e.target.type === 'checkbox') {
+          value = e.target.checked;
+        } else if (key === 'keywords') {
+          value = value.split(',').map(k => k.trim());
+        } else if (e.target.type === 'number') {
+          value = parseInt(value, 10);
+        }
+        
+        if (key) {
+          this.updateTriggerConfig(triggerId, key, value);
+        }
+      };
+      triggersContainer.addEventListener('change', this._handleTriggersChange);
     }
     
     // Renderizar steps
@@ -286,13 +345,46 @@ class FlowsEditor {
           <div class="step-header">
             <span class="step-number">${index + 1}</span>
             <span class="step-type">${this.formatLabel(step.actionType)}</span>
-            <button onclick="flowsEditor.removeStep('${step.id}')" class="btn-remove">×</button>
+            <button data-action="remove-step" class="btn-remove">×</button>
           </div>
           <div class="step-config">
             ${this.renderStepConfig(step)}
           </div>
         </div>
       `).join('') || '<div class="empty-state">Nenhuma ação</div>';
+      
+      // Event delegation for steps
+      stepsContainer.removeEventListener('click', this._handleStepsClick);
+      this._handleStepsClick = (e) => {
+        const removeBtn = e.target.closest('[data-action="remove-step"]');
+        if (removeBtn) {
+          const stepItem = removeBtn.closest('[data-step-id]');
+          if (stepItem) {
+            this.removeStep(stepItem.dataset.stepId);
+          }
+        }
+      };
+      stepsContainer.addEventListener('click', this._handleStepsClick);
+      
+      // Event delegation for step config changes
+      stepsContainer.removeEventListener('change', this._handleStepsChange);
+      this._handleStepsChange = (e) => {
+        const stepItem = e.target.closest('[data-step-id]');
+        if (!stepItem) return;
+        
+        const stepId = stepItem.dataset.stepId;
+        const key = e.target.dataset.configKey;
+        let value = e.target.value;
+        
+        if (e.target.type === 'number') {
+          value = parseInt(value, 10);
+        }
+        
+        if (key) {
+          this.updateStepConfig(stepId, key, value);
+        }
+      };
+      stepsContainer.addEventListener('change', this._handleStepsChange);
     }
   }
   
@@ -303,12 +395,12 @@ class FlowsEditor {
           <label>Palavras-chave (separadas por vírgula):</label>
           <input type="text" 
                  value="${(trigger.config?.keywords || []).join(', ')}"
-                 onchange="flowsEditor.updateTriggerConfig('${trigger.id}', 'keywords', this.value.split(',').map(k => k.trim()))"
+                 data-config-key="keywords"
                  placeholder="oi, olá, bom dia">
           <label>
             <input type="checkbox" 
                    ${trigger.config?.caseSensitive ? 'checked' : ''}
-                   onchange="flowsEditor.updateTriggerConfig('${trigger.id}', 'caseSensitive', this.checked)">
+                   data-config-key="caseSensitive">
             Diferenciar maiúsculas/minúsculas
           </label>
         `;
@@ -318,7 +410,7 @@ class FlowsEditor {
           <label>Minutos de silêncio:</label>
           <input type="number" 
                  value="${trigger.config?.minutes || 5}"
-                 onchange="flowsEditor.updateTriggerConfig('${trigger.id}', 'minutes', parseInt(this.value, 10))"
+                 data-config-key="minutes"
                  min="1" max="1440">
         `;
       
@@ -327,7 +419,7 @@ class FlowsEditor {
           <label>Expressão regular:</label>
           <input type="text" 
                  value="${trigger.config?.pattern || ''}"
-                 onchange="flowsEditor.updateTriggerConfig('${trigger.id}', 'pattern', this.value)"
+                 data-config-key="pattern"
                  placeholder="^(oi|olá).*">
         `;
       
@@ -342,7 +434,7 @@ class FlowsEditor {
         return `
           <label>Mensagem:</label>
           <textarea 
-            onchange="flowsEditor.updateStepConfig('${step.id}', 'message', this.value)"
+            data-config-key="message"
             placeholder="Use {{contact.name}} para nome do contato">${step.config?.message || ''}</textarea>
           <div class="variables-hint">
             Variáveis: {{contact.name}}, {{contact.phone}}, {{message.body}}, {{system.time}}
@@ -354,14 +446,14 @@ class FlowsEditor {
           <label>Tempo de espera (segundos):</label>
           <input type="number" 
                  value="${step.config?.seconds || 5}"
-                 onchange="flowsEditor.updateStepConfig('${step.id}', 'seconds', parseInt(this.value, 10))"
+                 data-config-key="seconds"
                  min="1" max="3600">
         `;
       
       case 'set_stage':
         return `
           <label>Estágio:</label>
-          <select onchange="flowsEditor.updateStepConfig('${step.id}', 'stage', this.value)">
+          <select data-config-key="stage">
             <option value="lead" ${step.config?.stage === 'lead' ? 'selected' : ''}>Lead</option>
             <option value="contact" ${step.config?.stage === 'contact' ? 'selected' : ''}>Contato</option>
             <option value="negotiation" ${step.config?.stage === 'negotiation' ? 'selected' : ''}>Negociação</option>
@@ -374,10 +466,10 @@ class FlowsEditor {
           <label>URL:</label>
           <input type="url" 
                  value="${step.config?.url || ''}"
-                 onchange="flowsEditor.updateStepConfig('${step.id}', 'url', this.value)"
+                 data-config-key="url"
                  placeholder="https://...">
           <label>Método:</label>
-          <select onchange="flowsEditor.updateStepConfig('${step.id}', 'method', this.value)">
+          <select data-config-key="method">
             <option value="POST" ${step.config?.method === 'POST' ? 'selected' : ''}>POST</option>
             <option value="GET" ${step.config?.method === 'GET' ? 'selected' : ''}>GET</option>
           </select>
@@ -387,7 +479,7 @@ class FlowsEditor {
         return `
           <label>Prompt do sistema:</label>
           <textarea 
-            onchange="flowsEditor.updateStepConfig('${step.id}', 'systemPrompt', this.value)"
+            data-config-key="systemPrompt"
             placeholder="Instruções para a IA...">${step.config?.systemPrompt || ''}</textarea>
         `;
       

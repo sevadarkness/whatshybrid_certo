@@ -509,9 +509,9 @@ const Workspace = (function() {
         );
 
         // Buscar em dados via Bridge (se conectado)
-        if (window.WhatsHybridBridge?.isConnected()) {
+        if (window.WhatsHybridBridge?.isConnected?.()) {
             try {
-                const contacts = await WhatsHybridBridge.searchContacts(query);
+                const contacts = await window.WhatsHybridBridge.searchContacts(query);
                 results.contacts = contacts.slice(0, 5);
             } catch (e) {}
         }
@@ -812,7 +812,7 @@ case 'export-data':
         }
 
         try {
-            await WhatsHybridBridge.sendMessage(to, body);
+            await window.WhatsHybridBridge?.sendMessage?.(to, body);
             showToast('Mensagem enviada!', 'success');
             closeModal();
         } catch (e) {
@@ -871,7 +871,7 @@ case 'export-data':
         updateConnectionStatus('connecting');
 
         try {
-            await WhatsHybridBridge.connect();
+            await window.WhatsHybridBridge?.connect?.();
             StateManager.setConnectionStatus('connected');
             updateConnectionStatus('connected');
         } catch (e) {

@@ -1,6 +1,6 @@
 // workspace/modules/dashboard/dashboard.js
 
-const DashboardModule = (function() {
+window.DashboardModule = window.DashboardModule || (function() {
     'use strict';
 
     let container = null;
@@ -50,11 +50,11 @@ const DashboardModule = (function() {
 
     async function loadStats() {
         try {
-            if (WhatsHybridBridge.isConnected()) {
+            if (window.WhatsHybridBridge?.isConnected?.()) {
                 const [contacts, chats, campaigns, aiState] = await Promise.all([
-                    WhatsHybridBridge.getContacts(),
-                    WhatsHybridBridge.getChats(),
-                    WhatsHybridBridge.getCampaigns(),
+                    window.WhatsHybridBridge.getContacts(),
+                    window.WhatsHybridBridge.getChats(),
+                    window.WhatsHybridBridge.getCampaigns(),
                     fetchAiTrainingState()
                 ]);
 
@@ -120,12 +120,12 @@ const DashboardModule = (function() {
         if (!list) return;
 
         try {
-            if (!WhatsHybridBridge.isConnected()) {
+            if (!window.WhatsHybridBridge?.isConnected?.()) {
                 list.innerHTML = '<p class="empty-state">Conecte ao WhatsApp para ver conversas</p>';
                 return;
             }
 
-            const chats = await WhatsHybridBridge.getChats();
+            const chats = await window.WhatsHybridBridge.getChats();
             const recent = chats.slice(0, 5);
 
             if (recent.length === 0) {
@@ -161,7 +161,7 @@ const DashboardModule = (function() {
         if (!list) return;
 
         try {
-            const campaigns = await WhatsHybridBridge.getCampaigns();
+            const campaigns = await window.WhatsHybridBridge?.getCampaigns?.() || [];
             const recent = campaigns.slice(-5).reverse();
 
             if (recent.length === 0) {
@@ -253,6 +253,3 @@ const DashboardModule = (function() {
         syncData
     };
 })();
-
-// Export global
-window.DashboardModule = DashboardModule;
