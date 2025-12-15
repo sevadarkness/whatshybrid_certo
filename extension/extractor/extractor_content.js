@@ -287,11 +287,12 @@
                 
                 this.pendingRequests.set(requestId, { resolve, reject });
                 
-                // Timeout
+                // Timeout - resolve null instead of reject
                 setTimeout(() => {
                     if (this.pendingRequests.has(requestId)) {
                         this.pendingRequests.delete(requestId);
-                        reject(new Error('Request timeout'));
+                        console.warn('[ExtractorContent] Request timeout, resolvendo com null');
+                        resolve(null);
                     }
                 }, 60000);
                 
@@ -305,7 +306,7 @@
         },
         
         _waitForReady(timeout = 30000) {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 if (this.ready) {
                     resolve();
                     return;
@@ -318,7 +319,8 @@
                         return;
                     }
                     if (Date.now() - startTime > timeout) {
-                        reject(new Error('Timeout aguardando extractor'));
+                        console.warn('[ExtractorContent] Timeout aguardando extractor, resolvendo com null');
+                        resolve(); // Resolve instead of reject
                         return;
                     }
                     setTimeout(check, 100);

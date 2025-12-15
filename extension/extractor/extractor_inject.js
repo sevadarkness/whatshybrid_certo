@@ -10,18 +10,35 @@
     // AGUARDAR STORE ESTAR DISPONÍVEL
     // ============================================
     
-    function waitForStore(timeout = 30000) {
+    function waitForStore(timeout = 60000) {
         return new Promise((resolve, reject) => {
             const startTime = Date.now();
             
             const check = () => {
+                // Try to get Store directly
                 if (window.Store && window.Store.Chat && window.Store.Contact) {
                     console.log('[Extractor] Store encontrado!');
                     resolve(window.Store);
                     return;
                 }
                 
+                // Fallback: try to get Store via require (WAWebCollections)
+                if (!window.Store && window.require) {
+                    try {
+                        const WAWebCollections = window.require('WAWebCollections');
+                        if (WAWebCollections) {
+                            window.Store = WAWebCollections;
+                            console.log('[Extractor] Store carregado via WAWebCollections');
+                            resolve(window.Store);
+                            return;
+                        }
+                    } catch (e) {
+                        // Continue checking
+                    }
+                }
+                
                 if (Date.now() - startTime > timeout) {
+                    console.warn('[Extractor] Timeout aguardando Store após 60s');
                     reject(new Error('Timeout aguardando Store'));
                     return;
                 }
