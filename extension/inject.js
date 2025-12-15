@@ -118,7 +118,7 @@
                 } else if (attempts >= maxAttempts) {
                     clearInterval(checkInterval);
                     if (!this.isInitialized) {
-                        console.warn('[WhatsAppWeb] Store não detectado após 30 segundos');
+                        console.warn('WhatsApp Web Store not detected after 30 seconds');
                         this.sendToExtension('integration_failed', { error: 'WhatsApp Web Store not detected' });
                     }
                 }

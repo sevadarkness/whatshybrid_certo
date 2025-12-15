@@ -2,9 +2,10 @@
 // Gerenciador de estado global para o workspace
 
 // Singleton guard
-if (window.StateManager) {
+if (window.__STATE_MANAGER_LOADED__) {
     console.log('[StateManager] Já carregado, ignorando...');
 } else {
+    window.__STATE_MANAGER_LOADED__ = true;
 
 const StateManager = (function() {
     'use strict';

@@ -463,7 +463,7 @@ class FlowsEditor {
       } else if (configType === 'number') {
         value = parseInt(target.value, 10);
       } else if (configType === 'keywords') {
-        value = target.value.split(',').map(k => k.trim());
+        value = target.value.split(',').map(k => k.trim()).filter(k => k.length > 0);
       }
       
       this.updateTriggerConfig(triggerId, configKey, value);

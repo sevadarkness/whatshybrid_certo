@@ -71,7 +71,10 @@
       console.log('[FlowsRuntime] Inicializando...');
 
       // Aguardar inject estar pronto (com timeout)
-      await this.waitForInject();
+      const injectReady = await this.waitForInject();
+      if (!injectReady) {
+        console.warn('[FlowsRuntime] Iniciando sem confirmação do inject - algumas funcionalidades podem não funcionar');
+      }
 
       // Criar instância do engine
       this.engine = new FlowsEngine();
