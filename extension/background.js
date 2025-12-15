@@ -1428,19 +1428,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Handler para mudanças de mensagens detectadas
     if (message.action === 'EXTRACTOR_MESSAGE_CHANGE') {
         handleMessageChange(message.changeType, message.data);
-        return;
+        return false; // Sync response
     }
     
     // Handler para detecção via DOM
     if (message.action === 'EXTRACTOR_DOM_DETECTION') {
         handleMessageChange(message.detectionType, message.data);
-        return;
+        return false; // Sync response
     }
     
     // Handler para content script pronto
     if (message.action === 'EXTRACTOR_CONTENT_READY') {
         console.log('[Background] Extractor content script pronto na tab:', sender.tab?.id);
-        return;
+        return false; // Sync response
     }
     
     // Handler para obter dados do extractor
@@ -1448,7 +1448,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (typeof sendResponse === 'function') {
             sendResponse({ success: true, data: extractorData });
         }
-        return;
+        return true; // Async response
     }
     
     // Handler para limpar dados do extractor

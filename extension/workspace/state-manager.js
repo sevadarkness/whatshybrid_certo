@@ -1,7 +1,7 @@
 // workspace/state-manager.js
 // Gerenciador de estado global para o workspace
 
-const StateManager = (function() {
+window.StateManager = window.StateManager || (function() {
     'use strict';
 
     // ============================================
@@ -456,6 +456,3 @@ const StateManager = (function() {
         toggleContextPanel
     };
 })();
-
-// Export para uso global
-window.StateManager = StateManager;

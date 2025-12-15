@@ -135,12 +135,18 @@
                         <span class="error-icon">⚠️</span>
                         <h1>Erro ao inicializar</h1>
                         <p>${error.message}</p>
-                        <button class="btn primary" onclick="location.reload()">
+                        <button class="btn primary" id="btn-reload-error">
                             Recarregar
                         </button>
                     </div>
                 </div>
             `;
+            
+            // Add event listener for reload button
+            const reloadBtn = document.getElementById('btn-reload-error');
+            if (reloadBtn) {
+                reloadBtn.addEventListener('click', () => location.reload());
+            }
         }
     }
 

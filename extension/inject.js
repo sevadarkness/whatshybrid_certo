@@ -136,6 +136,13 @@
                     userAgent: navigator.userAgent,
                     version: this.getWhatsAppVersion()
                 });
+                
+                // Notificar flows_runtime que inject está pronto
+                window.postMessage({
+                    source: 'QUANTUM_INJECT',
+                    type: 'INJECT_READY',
+                    timestamp: Date.now()
+                }, '*');
 
                 console.log('WhatsApp Web.js Manager integration initialized');
             } catch (error) {
@@ -293,7 +300,16 @@
                         } else if (options.contactCard) {
                             return await this.sendContactMessage(chatModel, options.contactCard);
                         } else {
-                            return await this.Store.SendMessage.sendTextMsgToChat(chatModel, content, options);
+                            // Fallback chain for sending text messages
+                            if (this.Store.SendMessage?.sendTextMsgToChat) {
+                                return await this.Store.SendMessage.sendTextMsgToChat(chatModel, content, options);
+                            } else if (this.Store.SendMessage?.sendMsgToChat) {
+                                return await this.Store.SendMessage.sendMsgToChat(chatModel, content, options);
+                            } else if (chatModel.sendMessage) {
+                                return await chatModel.sendMessage(content, options);
+                            } else {
+                                throw new Error('No send message method available');
+                            }
                         }
                     } catch (error) {
                         console.error('Error sending message:', error);
@@ -889,7 +905,17 @@ async function handleSendMessageFromRuntime(data, respond) {
       options.mentionedJidList = data.options.mentionedIds;
     }
     
-    const result = await window.Store.SendMessage.sendTextMsgToChat(chat, data.content, options);
+    // Fallback chain for sending text messages
+    let result;
+    if (window.Store.SendMessage?.sendTextMsgToChat) {
+      result = await window.Store.SendMessage.sendTextMsgToChat(chat, data.content, options);
+    } else if (window.Store.SendMessage?.sendMsgToChat) {
+      result = await window.Store.SendMessage.sendMsgToChat(chat, data.content, options);
+    } else if (chat.sendMessage) {
+      result = await chat.sendMessage(data.content, options);
+    } else {
+      throw new Error('No send message method available');
+    }
     
     respond({ 
       success: true, 

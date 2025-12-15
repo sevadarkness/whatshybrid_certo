@@ -273,26 +273,40 @@
     async function refreshDeletedMessages() {
         try {
             const result = await sendToContentScript('getDeletedMessages');
-            State.deletedMessages = [
-                ...(result.fromStore || []),
-                ...(result.fromDOM || [])
-            ];
+            // Null check for result
+            if (result && typeof result === 'object') {
+                State.deletedMessages = [
+                    ...(result.fromStore || []),
+                    ...(result.fromDOM || [])
+                ];
+            } else {
+                State.deletedMessages = [];
+            }
             renderDeletedMessages();
         } catch (error) {
             console.error('[ExtractorUI] Erro ao atualizar mensagens apagadas:', error);
+            State.deletedMessages = [];
+            renderDeletedMessages();
         }
     }
 
     async function refreshEditedMessages() {
         try {
             const result = await sendToContentScript('getEditedMessages');
-            State.editedMessages = [
-                ...(result.fromStore || []),
-                ...(result.fromDOM || [])
-            ];
+            // Null check for result
+            if (result && typeof result === 'object') {
+                State.editedMessages = [
+                    ...(result.fromStore || []),
+                    ...(result.fromDOM || [])
+                ];
+            } else {
+                State.editedMessages = [];
+            }
             renderEditedMessages();
         } catch (error) {
             console.error('[ExtractorUI] Erro ao atualizar mensagens editadas:', error);
+            State.editedMessages = [];
+            renderEditedMessages();
         }
     }
 

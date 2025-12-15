@@ -66,7 +66,8 @@
   // Pega o container da mensagem a partir de qualquer nó interno
   function getMessageContainerFromNode(node) {
     if (!(node instanceof Element)) return null;
-    return node.closest('[data-id]');
+    // Suporte para DOM novo do WhatsApp - vários atributos possíveis
+    return node.closest('[data-id], [data-message-id], [data-msg-id]');
   }
 
   // Identifica se a mensagem é recebida (de quem fala com você)
@@ -342,8 +343,8 @@
         cursor: pointer;
         opacity: 0.8;
     `;
-    closeBtn.onmouseover = () => (closeBtn.style.opacity = '1');
-    closeBtn.onmouseout = () => (closeBtn.style.opacity = '0.8');
+    closeBtn.addEventListener('mouseover', () => (closeBtn.style.opacity = '1'));
+    closeBtn.addEventListener('mouseout', () => (closeBtn.style.opacity = '0.8'));
 
     // Botão de download
     const downloadBtn = document.createElement('div');
@@ -360,10 +361,10 @@
         cursor: pointer;
         font-size: 14px;
     `;
-    downloadBtn.onclick = (e) => {
+    downloadBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       downloadImage(imageSrc);
-    };
+    });
 
     const cleanup = () => {
       modal.remove();
@@ -371,12 +372,12 @@
     };
 
     // Fecha ao clicar no overlay
-    modal.onclick = cleanup;
-    img.onclick = (e) => e.stopPropagation();
-    closeBtn.onclick = (e) => {
+    modal.addEventListener('click', cleanup);
+    img.addEventListener('click', (e) => e.stopPropagation());
+    closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       cleanup();
-    };
+    });
 
     // Fecha com ESC
     const handleEsc = (e) => {
@@ -433,7 +434,7 @@
       img.style.borderRadius = '4px';
       img.style.marginBottom = '4px';
       img.style.cursor = 'pointer';
-      img.onclick = () => openImageModal(previousImage);
+      img.addEventListener('click', () => openImageModal(previousImage));
       badge.appendChild(img);
     }
 
@@ -458,7 +459,10 @@
     if (!container) return;
     if (!isIncomingMessage(container)) return;
 
-    const id = container.getAttribute('data-id');
+    // Suporte para DOM novo do WhatsApp - vários atributos possíveis
+    const id = container.getAttribute('data-id') ||
+               container.getAttribute('data-message-id') ||
+               container.getAttribute('data-msg-id');
     if (!id) return;
 
     const text = extractMessageText(container);
@@ -493,7 +497,8 @@
 
   // Faz um índice inicial de todas as mensagens já renderizadas
   async function indexExistingMessages(token) {
-    const containers = document.querySelectorAll('[data-id]');
+    // Suporte para DOM novo do WhatsApp - vários atributos possíveis
+    const containers = document.querySelectorAll('[data-id], [data-message-id], [data-msg-id]');
     console.log(`[WPP Recovery] Indexando ${containers.length} nós (filtrando apenas recebidas)...`);
 
     // Processa em batches para não travar
@@ -518,7 +523,10 @@
     if (!container) return;
     if (!isIncomingMessage(container)) return;
 
-    const id = container.getAttribute('data-id');
+    // Suporte para DOM novo do WhatsApp - vários atributos possíveis
+    const id = container.getAttribute('data-id') ||
+               container.getAttribute('data-message-id') ||
+               container.getAttribute('data-msg-id');
     if (!id) return;
 
     const entry = messageCache.get(id);
@@ -577,13 +585,14 @@
     if (!(node instanceof Element)) return;
 
     // Se o próprio nó é um container de mensagem
-    if (node.hasAttribute('data-id')) {
+    // Suporte para DOM novo do WhatsApp - vários atributos possíveis
+    if (node.hasAttribute('data-id') || node.hasAttribute('data-message-id') || node.hasAttribute('data-msg-id')) {
       await indexSingleMessage(node);
       await handleMessageContainerChange(node);
     }
 
     // Ou se ele tem containers de mensagem dentro
-    const innerContainers = node.querySelectorAll('[data-id]');
+    const innerContainers = node.querySelectorAll('[data-id], [data-message-id], [data-msg-id]');
     for (const c of innerContainers) {
       await indexSingleMessage(c);
       await handleMessageContainerChange(c);

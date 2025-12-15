@@ -102,6 +102,16 @@ const ModuleLoader = (function() {
                 css: 'labels.css'
             }
         },
+        flows: {
+            name: 'Flows',
+            icon: '⚡',
+            path: 'workspace/modules/flows',
+            files: {
+                html: 'flows.html',
+                js: 'flows.js',
+                css: 'flows.css'
+            }
+        },
         settings: {
             name: 'Configurações',
             icon: '⚙️',
