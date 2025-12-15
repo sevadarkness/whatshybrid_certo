@@ -360,10 +360,10 @@
         cursor: pointer;
         font-size: 14px;
     `;
-    downloadBtn.onclick = (e) => {
+    downloadBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       downloadImage(imageSrc);
-    };
+    });
 
     const cleanup = () => {
       modal.remove();
@@ -371,12 +371,12 @@
     };
 
     // Fecha ao clicar no overlay
-    modal.onclick = cleanup;
-    img.onclick = (e) => e.stopPropagation();
-    closeBtn.onclick = (e) => {
+    modal.addEventListener('click', cleanup);
+    img.addEventListener('click', (e) => e.stopPropagation());
+    closeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       cleanup();
-    };
+    });
 
     // Fecha com ESC
     const handleEsc = (e) => {
@@ -433,7 +433,7 @@
       img.style.borderRadius = '4px';
       img.style.marginBottom = '4px';
       img.style.cursor = 'pointer';
-      img.onclick = () => openImageModal(previousImage);
+      img.addEventListener('click', () => openImageModal(previousImage));
       badge.appendChild(img);
     }
 

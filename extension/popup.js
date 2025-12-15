@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('btn-quick-message').addEventListener('click', () => openPanelAt('quick-message'));
     document.getElementById('btn-dashboard').addEventListener('click', () => openPanelAt('dashboard'));
     document.getElementById('btn-bulk').addEventListener('click', () => openPanelAt('bulk'));
-    document.getElementById('btn-flows').addEventListener('click', () => openPanelAt('flows'));
+    document.getElementById('btn-flows').addEventListener('click', () => openPanelAt('smart-replies'));
     document.getElementById('btn-extractor').addEventListener('click', () => openPanelAt('extractor'));
     document.getElementById('btn-settings').addEventListener('click', () => openPanelAt('settings'));
 });

@@ -1,6 +1,11 @@
 // workspace/state-manager.js
 // Gerenciador de estado global para o workspace
 
+// Singleton guard
+if (window.StateManager) {
+    console.log('[StateManager] Já carregado, ignorando...');
+} else {
+
 const StateManager = (function() {
     'use strict';
 
@@ -459,3 +464,5 @@ const StateManager = (function() {
 
 // Export para uso global
 window.StateManager = StateManager;
+
+} // End of singleton guard

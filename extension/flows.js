@@ -74,6 +74,25 @@ class FlowsEditor {
     }
   }
   
+  setupFlowsListListeners(container) {
+    // Event delegation for flows list
+    container.addEventListener('click', (e) => {
+      const target = e.target.closest('[data-action]');
+      if (!target) return;
+      
+      const action = target.dataset.action;
+      const flowId = target.dataset.flowId;
+      
+      if (action === 'select-flow' && flowId) {
+        this.selectFlow(flowId);
+      } else if (action === 'duplicate-flow' && flowId) {
+        this.duplicateFlow(flowId);
+      } else if (action === 'delete-flow' && flowId) {
+        this.deleteFlow(flowId);
+      }
+    });
+  }
+  
   setupEventListeners() {
     // Botão criar flow
     document.getElementById('btn-new-flow')?.addEventListener('click', () => {
@@ -235,17 +254,20 @@ class FlowsEditor {
     
     container.innerHTML = (this.flows || []).map(flow => `
       <div class="flow-item ${this.currentFlow?.id === flow.id ? 'active' : ''}" data-flow-id="${flow.id}">
-        <div class="flow-item-header" onclick="flowsEditor.selectFlow('${flow.id}')">
+        <div class="flow-item-header" data-action="select-flow" data-flow-id="${flow.id}">
           <span class="flow-status ${flow.enabled ? 'enabled' : 'disabled'}"></span>
           <span class="flow-name">${this.escapeHtml(flow.name)}</span>
           <span class="flow-stats">${(flow.triggers || []).length}T / ${(flow.steps || []).length}A</span>
         </div>
         <div class="flow-item-actions">
-          <button onclick="flowsEditor.duplicateFlow('${flow.id}')" title="Duplicar">📋</button>
-          <button onclick="flowsEditor.deleteFlow('${flow.id}')" title="Excluir">🗑️</button>
+          <button data-action="duplicate-flow" data-flow-id="${flow.id}" title="Duplicar">📋</button>
+          <button data-action="delete-flow" data-flow-id="${flow.id}" title="Excluir">🗑️</button>
         </div>
       </div>
     `).join('') || '<div class="empty-state">Nenhum flow definido ainda.</div>';
+    
+    // Setup event delegation
+    this.setupFlowsListListeners(container);
   }
   
   renderFlowEditor() {
@@ -269,13 +291,15 @@ class FlowsEditor {
         <div class="trigger-item" data-trigger-id="${trigger.id}">
           <div class="trigger-header">
             <span class="trigger-type">${this.formatLabel(trigger.type)}</span>
-            <button onclick="flowsEditor.removeTrigger('${trigger.id}')" class="btn-remove">×</button>
+            <button data-action="remove-trigger" data-trigger-id="${trigger.id}" class="btn-remove">×</button>
           </div>
           <div class="trigger-config">
             ${this.renderTriggerConfig(trigger)}
           </div>
         </div>
       `).join('') || '<div class="empty-state">Nenhum gatilho</div>';
+      
+      this.setupTriggersListeners(triggersContainer);
     }
     
     // Renderizar steps
@@ -286,13 +310,15 @@ class FlowsEditor {
           <div class="step-header">
             <span class="step-number">${index + 1}</span>
             <span class="step-type">${this.formatLabel(step.actionType)}</span>
-            <button onclick="flowsEditor.removeStep('${step.id}')" class="btn-remove">×</button>
+            <button data-action="remove-step" data-step-id="${step.id}" class="btn-remove">×</button>
           </div>
           <div class="step-config">
             ${this.renderStepConfig(step)}
           </div>
         </div>
       `).join('') || '<div class="empty-state">Nenhuma ação</div>';
+      
+      this.setupStepsListeners(stepsContainer);
     }
   }
   
@@ -302,13 +328,17 @@ class FlowsEditor {
         return `
           <label>Palavras-chave (separadas por vírgula):</label>
           <input type="text" 
+                 data-trigger-id="${trigger.id}"
+                 data-config-key="keywords"
+                 data-config-type="keywords"
                  value="${(trigger.config?.keywords || []).join(', ')}"
-                 onchange="flowsEditor.updateTriggerConfig('${trigger.id}', 'keywords', this.value.split(',').map(k => k.trim()))"
                  placeholder="oi, olá, bom dia">
           <label>
             <input type="checkbox" 
-                   ${trigger.config?.caseSensitive ? 'checked' : ''}
-                   onchange="flowsEditor.updateTriggerConfig('${trigger.id}', 'caseSensitive', this.checked)">
+                   data-trigger-id="${trigger.id}"
+                   data-config-key="caseSensitive"
+                   data-config-type="boolean"
+                   ${trigger.config?.caseSensitive ? 'checked' : ''}>
             Diferenciar maiúsculas/minúsculas
           </label>
         `;
@@ -317,8 +347,10 @@ class FlowsEditor {
         return `
           <label>Minutos de silêncio:</label>
           <input type="number" 
+                 data-trigger-id="${trigger.id}"
+                 data-config-key="minutes"
+                 data-config-type="number"
                  value="${trigger.config?.minutes || 5}"
-                 onchange="flowsEditor.updateTriggerConfig('${trigger.id}', 'minutes', parseInt(this.value, 10))"
                  min="1" max="1440">
         `;
       
@@ -326,8 +358,10 @@ class FlowsEditor {
         return `
           <label>Expressão regular:</label>
           <input type="text" 
+                 data-trigger-id="${trigger.id}"
+                 data-config-key="pattern"
+                 data-config-type="string"
                  value="${trigger.config?.pattern || ''}"
-                 onchange="flowsEditor.updateTriggerConfig('${trigger.id}', 'pattern', this.value)"
                  placeholder="^(oi|olá).*">
         `;
       
@@ -342,7 +376,9 @@ class FlowsEditor {
         return `
           <label>Mensagem:</label>
           <textarea 
-            onchange="flowsEditor.updateStepConfig('${step.id}', 'message', this.value)"
+            data-step-id="${step.id}"
+            data-config-key="message"
+            data-config-type="string"
             placeholder="Use {{contact.name}} para nome do contato">${step.config?.message || ''}</textarea>
           <div class="variables-hint">
             Variáveis: {{contact.name}}, {{contact.phone}}, {{message.body}}, {{system.time}}
@@ -353,15 +389,17 @@ class FlowsEditor {
         return `
           <label>Tempo de espera (segundos):</label>
           <input type="number" 
+                 data-step-id="${step.id}"
+                 data-config-key="seconds"
+                 data-config-type="number"
                  value="${step.config?.seconds || 5}"
-                 onchange="flowsEditor.updateStepConfig('${step.id}', 'seconds', parseInt(this.value, 10))"
                  min="1" max="3600">
         `;
       
       case 'set_stage':
         return `
           <label>Estágio:</label>
-          <select onchange="flowsEditor.updateStepConfig('${step.id}', 'stage', this.value)">
+          <select data-step-id="${step.id}" data-config-key="stage" data-config-type="string">
             <option value="lead" ${step.config?.stage === 'lead' ? 'selected' : ''}>Lead</option>
             <option value="contact" ${step.config?.stage === 'contact' ? 'selected' : ''}>Contato</option>
             <option value="negotiation" ${step.config?.stage === 'negotiation' ? 'selected' : ''}>Negociação</option>
@@ -373,11 +411,13 @@ class FlowsEditor {
         return `
           <label>URL:</label>
           <input type="url" 
+                 data-step-id="${step.id}"
+                 data-config-key="url"
+                 data-config-type="string"
                  value="${step.config?.url || ''}"
-                 onchange="flowsEditor.updateStepConfig('${step.id}', 'url', this.value)"
                  placeholder="https://...">
           <label>Método:</label>
-          <select onchange="flowsEditor.updateStepConfig('${step.id}', 'method', this.value)">
+          <select data-step-id="${step.id}" data-config-key="method" data-config-type="string">
             <option value="POST" ${step.config?.method === 'POST' ? 'selected' : ''}>POST</option>
             <option value="GET" ${step.config?.method === 'GET' ? 'selected' : ''}>GET</option>
           </select>
@@ -387,13 +427,77 @@ class FlowsEditor {
         return `
           <label>Prompt do sistema:</label>
           <textarea 
-            onchange="flowsEditor.updateStepConfig('${step.id}', 'systemPrompt', this.value)"
+            data-step-id="${step.id}"
+            data-config-key="systemPrompt"
+            data-config-type="string"
             placeholder="Instruções para a IA...">${step.config?.systemPrompt || ''}</textarea>
         `;
       
       default:
         return '<span class="hint">Sem configuração adicional</span>';
     }
+  }
+  
+  setupTriggersListeners(container) {
+    // Event delegation for remove buttons
+    container.addEventListener('click', (e) => {
+      const target = e.target.closest('[data-action="remove-trigger"]');
+      if (target) {
+        const triggerId = target.dataset.triggerId;
+        if (triggerId) this.removeTrigger(triggerId);
+      }
+    });
+    
+    // Event delegation for config inputs
+    container.addEventListener('change', (e) => {
+      const target = e.target;
+      const triggerId = target.dataset.triggerId;
+      const configKey = target.dataset.configKey;
+      const configType = target.dataset.configType;
+      
+      if (!triggerId || !configKey) return;
+      
+      let value = target.value;
+      if (configType === 'boolean') {
+        value = target.checked;
+      } else if (configType === 'number') {
+        value = parseInt(target.value, 10);
+      } else if (configType === 'keywords') {
+        value = target.value.split(',').map(k => k.trim());
+      }
+      
+      this.updateTriggerConfig(triggerId, configKey, value);
+    });
+  }
+  
+  setupStepsListeners(container) {
+    // Event delegation for remove buttons
+    container.addEventListener('click', (e) => {
+      const target = e.target.closest('[data-action="remove-step"]');
+      if (target) {
+        const stepId = target.dataset.stepId;
+        if (stepId) this.removeStep(stepId);
+      }
+    });
+    
+    // Event delegation for config inputs
+    container.addEventListener('change', (e) => {
+      const target = e.target;
+      const stepId = target.dataset.stepId;
+      const configKey = target.dataset.configKey;
+      const configType = target.dataset.configType;
+      
+      if (!stepId || !configKey) return;
+      
+      let value = target.value;
+      if (configType === 'boolean') {
+        value = target.checked;
+      } else if (configType === 'number') {
+        value = parseInt(target.value, 10);
+      }
+      
+      this.updateStepConfig(stepId, configKey, value);
+    });
   }
   
   formatLabel(key) {

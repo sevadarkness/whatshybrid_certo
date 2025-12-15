@@ -54,7 +54,10 @@ const Workspace = (function() {
             } else if (ModuleLoader.getModuleConfig(hash)) {
                 initialModule = hash;
             } else {
-                console.warn('[Workspace] Hash de módulo desconhecido:', hash);
+                console.warn('[Workspace] Hash de módulo desconhecido:', hash, '- redirecionando para dashboard');
+                initialModule = 'dashboard';
+                // Clear invalid hash
+                history.replaceState(null, '', '#dashboard');
             }
         }
 
