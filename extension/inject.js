@@ -367,8 +367,13 @@
 
         waitForWhatsAppWeb() {
             const checkInterval = setInterval(() => {
-                if (window.Store || window.require) {
+                // Check for Store/require (preferred) or DOM elements (fallback)
+                const hasStore = window.Store || window.require;
+                const hasDOM = document.querySelector('#app') || document.querySelector('#pane-side');
+                
+                if (hasStore || hasDOM) {
                     clearInterval(checkInterval);
+                    console.log('[Inject] WhatsApp Web detected, initializing...', hasStore ? 'Store available' : 'DOM-only mode');
                     this.initializeIntegration();
                 }
             }, 1000);
@@ -377,35 +382,62 @@
             setTimeout(() => {
                 clearInterval(checkInterval);
                 if (!this.isInitialized) {
-                    console.warn('WhatsApp Web not detected after 30 seconds');
-                    this.sendToExtension('integration_failed', { error: 'WhatsApp Web not detected' });
+                    console.warn('[Inject] WhatsApp Web not detected after 30 seconds, trying to initialize anyway...');
+                    // Try to initialize anyway - DOM methods might still work
+                    try {
+                        this.initializeIntegration();
+                    } catch (e) {
+                        console.error('[Inject] Failed to initialize:', e);
+                        this.sendToExtension('integration_failed', { error: 'WhatsApp Web not detected' });
+                    }
                 }
             }, 30000);
         }
 
         initializeIntegration() {
             try {
-                this.initStore();
+                // Try to init Store (may fail if not available)
+                try {
+                    this.initStore();
+                    console.log('[Inject] Store initialized successfully');
+                } catch (e) {
+                    console.warn('[Inject] Store initialization failed, will use DOM-only mode:', e.message);
+                    this.Store = null;
+                }
+                
+                // Always init utils (has DOM fallbacks)
                 this.initUtils();
-                this.setupEventListeners();
+                
+                // Try to setup event listeners (may fail if Store not available)
+                try {
+                    this.setupEventListeners();
+                } catch (e) {
+                    console.warn('[Inject] Event listeners setup failed:', e.message);
+                }
+                
                 this.isInitialized = true;
                 
                 this.sendToExtension('integration_ready', {
                     timestamp: Date.now(),
                     userAgent: navigator.userAgent,
-                    version: this.getWhatsAppVersion()
+                    version: this.getWhatsAppVersion(),
+                    hasStore: !!this.Store,
+                    mode: this.Store ? 'hybrid' : 'dom-only'
                 });
                 
                 // Notificar flows_runtime que inject está pronto
                 window.postMessage({
                     source: 'QUANTUM_INJECT',
                     type: 'INJECT_READY',
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
+                    hasStore: !!this.Store,
+                    mode: this.Store ? 'hybrid' : 'dom-only'
                 }, '*');
 
-                console.log('WhatsApp Web.js Manager integration initialized');
+                console.log('[Inject] WhatsApp Web.js Manager integration initialized in', 
+                           this.Store ? 'hybrid mode (Store + DOM)' : 'DOM-only mode');
             } catch (error) {
-                console.error('Failed to initialize WhatsApp Web integration:', error);
+                console.error('[Inject] Failed to initialize WhatsApp Web integration:', error);
                 this.sendToExtension('integration_failed', { error: error.message });
             }
         }
