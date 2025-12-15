@@ -496,8 +496,26 @@ function fillMessageBox(text) {
   
   // Focus and clear
   editableDiv.focus();
-  document.execCommand("selectAll", false, null);
-  document.execCommand("delete", false, null);
+  
+  // Clear existing content (using modern Selection API when possible)
+  if (window.getSelection && document.createRange) {
+    try {
+      const range = document.createRange();
+      range.selectNodeContents(editableDiv);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      editableDiv.textContent = '';
+    } catch (e) {
+      // Fallback to deprecated execCommand for compatibility
+      document.execCommand("selectAll", false, null);
+      document.execCommand("delete", false, null);
+    }
+  } else {
+    // Legacy browsers fallback
+    document.execCommand("selectAll", false, null);
+    document.execCommand("delete", false, null);
+  }
   
   // Set text content
   editableDiv.textContent = text;

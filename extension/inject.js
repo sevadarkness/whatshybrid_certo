@@ -93,6 +93,12 @@
     // DOM-BASED UTILITIES (2024-2025 WhatsApp Web)
     // ============================================
     
+    // Timing constants for DOM operations
+    const WHATSAPP_UI_UPDATE_DELAY = 150;  // Time for WhatsApp UI to process input
+    const MESSAGE_SEND_CONFIRMATION_DELAY = 100;  // Time to ensure message is sent
+    const SEARCH_RESULTS_WAIT_TIME = 1000;  // Time to wait for search results to load
+    const CHAT_LOAD_DELAY = 500;  // Time to wait for chat to load after clicking
+    
     /**
      * Send message via DOM manipulation (fallback when Store is unavailable)
      */
@@ -116,8 +122,26 @@
             
             // 2. Focus and clear
             messageBox.focus();
-            document.execCommand('selectAll', false, null);
-            document.execCommand('delete', false, null);
+            
+            // Clear existing content (using modern Selection API when possible)
+            if (window.getSelection && document.createRange) {
+                try {
+                    const range = document.createRange();
+                    range.selectNodeContents(messageBox);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    messageBox.textContent = '';
+                } catch (e) {
+                    // Fallback to deprecated execCommand for compatibility
+                    document.execCommand('selectAll', false, null);
+                    document.execCommand('delete', false, null);
+                }
+            } else {
+                // Legacy browsers fallback
+                document.execCommand('selectAll', false, null);
+                document.execCommand('delete', false, null);
+            }
             
             // 3. Insert text
             messageBox.textContent = text;
@@ -136,8 +160,7 @@
             console.log('[Inject][DOM] Text inserted and events dispatched');
             
             // 5. Wait for WhatsApp to process the input and enable send button
-            // 150ms is empirically determined to be sufficient for WhatsApp's UI update cycle
-            await new Promise(r => setTimeout(r, 150));
+            await new Promise(r => setTimeout(r, WHATSAPP_UI_UPDATE_DELAY));
             
             // 6. Find and click send button with multiple fallback selectors
             const sendButton = document.querySelector('[data-testid="send"]') ||
@@ -157,8 +180,8 @@
             console.log('[Inject][DOM] Send button found, clicking...');
             sendButton.click();
             
-            // Wait a bit to ensure message is sent
-            await new Promise(r => setTimeout(r, 100));
+            // Wait to ensure message is sent
+            await new Promise(r => setTimeout(r, MESSAGE_SEND_CONFIRMATION_DELAY));
             
             console.log('[Inject][DOM] Message sent successfully via DOM');
             return { success: true, method: 'DOM' };
@@ -286,7 +309,7 @@
                 if (title && title.toLowerCase().includes(name.toLowerCase())) {
                     console.log('[Inject][DOM] Found matching chat:', title);
                     item.click();
-                    await new Promise(r => setTimeout(r, 500)); // Wait for chat to load
+                    await new Promise(r => setTimeout(r, CHAT_LOAD_DELAY));
                     return { success: true, name: title, method: 'DOM' };
                 }
             }
@@ -326,7 +349,7 @@
             searchBox.dispatchEvent(new InputEvent('input', { bubbles: true }));
             
             // 3. Wait for search results
-            await new Promise(r => setTimeout(r, 1000));
+            await new Promise(r => setTimeout(r, SEARCH_RESULTS_WAIT_TIME));
             
             // 4. Click first result
             const firstResult = document.querySelector('[data-testid="cell-frame-container"]') ||
@@ -336,7 +359,7 @@
             if (firstResult) {
                 console.log('[Inject][DOM] Clicking first search result');
                 firstResult.click();
-                await new Promise(r => setTimeout(r, 500));
+                await new Promise(r => setTimeout(r, CHAT_LOAD_DELAY));
                 return { success: true, method: 'DOM' };
             }
             
