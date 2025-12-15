@@ -412,8 +412,16 @@ chrome.storage.sync.get(
 
 // Util: contato + chat
 function getCurrentContactName() {
-  const header = document.querySelector("header span[title]");
-  if (header) return header.getAttribute("title");
+  // Try multiple selectors for better compatibility (WhatsApp Web 2024-2025)
+  const header = document.querySelector('[data-testid="conversation-info-header-chat-title"]') ||
+                document.querySelector('header span[dir="auto"][title]') ||
+                document.querySelector('#main header span[title]') ||
+                document.querySelector('header[data-testid="conversation-header"] span[title]') ||
+                document.querySelector("header span[title]");
+  
+  if (header) {
+    return header.getAttribute("title") || header.textContent || null;
+  }
   return null;
 }
 
@@ -464,25 +472,48 @@ function fillTemplate(template) {
 }
 
 function getMessageBox() {
+  // Multiple fallback selectors for WhatsApp Web 2024-2025
   return (
+    document.querySelector('[data-testid="conversation-compose-box-input"]') ||
     document.querySelector('[contenteditable="true"][data-tab="10"]') ||
     document.querySelector('[contenteditable="true"][data-tab="6"]') ||
-    document.querySelector('[contenteditable="true"][data-tab="1"]')
+    document.querySelector('[contenteditable="true"][data-tab="1"]') ||
+    document.querySelector('footer [contenteditable="true"]') ||
+    document.querySelector('div[role="textbox"][contenteditable="true"]') ||
+    document.querySelector('[data-lexical-editor="true"]')
   );
 }
 
 function fillMessageBox(text) {
   const editableDiv = getMessageBox();
   if (!editableDiv) {
+    console.error("[content_main] Message box not found");
     showToast("Não encontrei o campo de mensagem do WhatsApp Web.");
     return;
   }
+  
+  console.log("[content_main] Filling message box with text:", text?.substring(0, 50));
+  
+  // Focus and clear
   editableDiv.focus();
   document.execCommand("selectAll", false, null);
   document.execCommand("delete", false, null);
-  const event = new InputEvent("input", { bubbles: true });
+  
+  // Set text content
   editableDiv.textContent = text;
-  editableDiv.dispatchEvent(event);
+  
+  // Dispatch multiple events for better compatibility
+  const inputEvent = new InputEvent("input", { 
+    bubbles: true, 
+    data: text,
+    inputType: 'insertText'
+  });
+  editableDiv.dispatchEvent(inputEvent);
+  
+  // Also dispatch change event
+  editableDiv.dispatchEvent(new Event("change", { bubbles: true }));
+  
+  console.log("[content_main] Message box filled successfully");
 }
 
 
@@ -1022,13 +1053,34 @@ function openQuickReplies() {
 }
 
 function getLastMessages(limit = 8) {
+  console.log("[content_main] Reading last messages from DOM, limit:", limit);
+  
   const msgs = [];
-  const msgNodes = document.querySelectorAll("div[role='row'] div.copyable-text");
+  
+  // Try multiple selectors for better compatibility (WhatsApp Web 2024-2025)
+  let msgNodes = document.querySelectorAll("div[role='row'] div.copyable-text");
+  
+  // Fallback: try alternative selectors
+  if (msgNodes.length === 0) {
+    msgNodes = document.querySelectorAll("div[data-id] span.selectable-text, div[data-message-id] span.selectable-text");
+  }
+  
+  // Another fallback
+  if (msgNodes.length === 0) {
+    msgNodes = document.querySelectorAll("span[dir='ltr'], span[dir='auto']");
+  }
+  
+  console.log("[content_main] Found", msgNodes.length, "message nodes");
+  
   const arr = Array.from(msgNodes).slice(-limit);
   arr.forEach((node) => {
     const text = node.innerText || node.textContent || "";
-    if (text.trim()) msgs.push(text.trim());
+    if (text.trim()) {
+      msgs.push(text.trim());
+    }
   });
+  
+  console.log("[content_main] Extracted", msgs.length, "messages");
   return msgs;
 }
 

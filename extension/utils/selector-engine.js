@@ -14,36 +14,43 @@
       'header[data-testid="conversation-header"]',
       '[data-testid="conversation-info-header"]',
       '#main header',
-      '#main > div > header'
+      '#main > div > header',
+      'header[role="banner"]'
     ],
 
     // Título do chat (nome do contato/grupo)
     chatTitle: [
       '[data-testid="conversation-info-header-chat-title"]',
       'header span[dir="auto"][title]',
-      '#main header span[title]'
+      '#main header span[title]',
+      'header[data-testid="conversation-header"] span[title]'
     ],
 
-    // Input de mensagem
+    // Input de mensagem (WhatsApp Web 2024-2025)
     messageInput: [
       '[data-testid="conversation-compose-box-input"]',
       '[contenteditable="true"][data-tab="10"]',
+      '[contenteditable="true"][data-tab="6"]',
+      '[contenteditable="true"][data-tab="1"]',
       'footer [contenteditable="true"]',
-      'div[role="textbox"][contenteditable="true"]'
+      'div[role="textbox"][contenteditable="true"]',
+      '[data-lexical-editor="true"]'
     ],
 
-    // Botão de enviar
+    // Botão de enviar (múltiplos fallbacks)
     sendButton: [
       '[data-testid="send"]',
-      'button[aria-label="Enviar"]',
-      'button[aria-label="Send"]',
-      'span[data-icon="send"]'
+      'button[aria-label*="Enviar"]',
+      'button[aria-label*="Send"]',
+      'span[data-icon="send"]',
+      'footer button[data-tab="11"]'
     ],
 
     // Lista de chats
     chatList: [
       '[data-testid="chat-list"]',
       '[aria-label="Lista de conversas"]',
+      '[aria-label*="Chat list"]',
       'div#pane-side > div > div > div',
       '#pane-side'
     ],
@@ -52,7 +59,34 @@
     chatItem: [
       '[data-testid="cell-frame-container"]',
       '[data-testid="list-item-content"]',
-      '#pane-side [role="listitem"]'
+      '#pane-side [role="listitem"]',
+      'div[role="listitem"]'
+    ],
+
+    // Container de mensagens
+    messageContainer: [
+      'div[data-id]',
+      'div[data-message-id]',
+      'div[data-msg-id]',
+      'div.message-in',
+      'div.message-out',
+      'div[role="row"]'
+    ],
+
+    // Texto da mensagem
+    messageText: [
+      'span.selectable-text',
+      'div.copyable-text',
+      'span[dir="ltr"]',
+      'span[dir="auto"]'
+    ],
+
+    // Campo de busca
+    searchInput: [
+      '[data-testid="chat-list-search"]',
+      '[data-testid="search-input"]',
+      '[contenteditable="true"][data-tab="3"]',
+      'div[role="textbox"][data-tab="3"]'
     ],
 
     // Painel principal
@@ -65,6 +99,13 @@
     sidebar: [
       '#side',
       'div#pane-side'
+    ],
+
+    // App wrapper (para verificar se WhatsApp carregou)
+    appWrapper: [
+      '.app-wrapper .app',
+      '#app .app',
+      '#app'
     ]
   };
 
