@@ -304,7 +304,7 @@
             });
         },
         
-        _waitForReady(timeout = 30000) {
+        _waitForReady(timeout = 60000) {
             return new Promise((resolve, reject) => {
                 if (this.ready) {
                     resolve();
@@ -318,7 +318,9 @@
                         return;
                     }
                     if (Date.now() - startTime > timeout) {
-                        reject(new Error('Timeout aguardando extractor'));
+                        // Não rejeitar - retornar null para falha graciosa
+                        console.warn('[Extractor Content] Extractor não pronto após timeout');
+                        resolve(null);
                         return;
                     }
                     setTimeout(check, 100);

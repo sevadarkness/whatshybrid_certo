@@ -10,19 +10,50 @@
     // AGUARDAR STORE ESTAR DISPONÍVEL
     // ============================================
     
-    function waitForStore(timeout = 30000) {
+    function waitForStore(timeout = 60000) {
         return new Promise((resolve, reject) => {
             const startTime = Date.now();
             
             const check = () => {
+                // Tentar window.Store primeiro
                 if (window.Store && window.Store.Chat && window.Store.Contact) {
-                    console.log('[Extractor] Store encontrado!');
+                    console.log('[Extractor] Store encontrado via window.Store');
                     resolve(window.Store);
                     return;
                 }
                 
+                // Fallback: tentar via require
+                if (window.require) {
+                    try {
+                        const store = window.require('WAWebCollections');
+                        if (store && store.Chat && store.Contact) {
+                            window.Store = store; // Expor globalmente
+                            console.log('[Extractor] Store encontrado via require');
+                            resolve(store);
+                            return;
+                        }
+                    } catch (e) {}
+                }
+                
+                // Fallback: tentar via webpackChunkwhatsapp_web_client
+                if (window.webpackChunkwhatsapp_web_client) {
+                    try {
+                        const modules = window.webpackChunkwhatsapp_web_client;
+                        for (let i in modules) {
+                            if (modules[i] && modules[i].Chat && modules[i].Contact) {
+                                window.Store = modules[i];
+                                console.log('[Extractor] Store encontrado via webpack');
+                                resolve(modules[i]);
+                                return;
+                            }
+                        }
+                    } catch (e) {}
+                }
+                
                 if (Date.now() - startTime > timeout) {
-                    reject(new Error('Timeout aguardando Store'));
+                    // Não rejeitar - retornar null para falha graciosa
+                    console.warn('[Extractor] Store não encontrado após timeout');
+                    resolve(null);
                     return;
                 }
                 
@@ -45,6 +76,11 @@
         async extractAllContacts() {
             const store = await waitForStore();
             const contacts = [];
+            
+            if (!store) {
+                console.error('[Extractor] Store não disponível - retornando lista vazia');
+                return contacts;
+            }
             
             try {
                 const contactModels = store.Contact._models || store.Contact.getModelsArray();
@@ -159,6 +195,11 @@
         async extractAllChats(options = {}) {
             const store = await waitForStore();
             const chats = [];
+            
+            if (!store) {
+                console.error('[Extractor] Store não disponível - retornando lista vazia');
+                return chats;
+            }
             
             const {
                 includeMessages = false,
@@ -401,6 +442,11 @@
             const store = await waitForStore();
             const groups = [];
             
+            if (!store) {
+                console.error('[Extractor] Store não disponível - retornando lista vazia');
+                return groups;
+            }
+            
             try {
                 const chatModels = store.Chat._models || store.Chat.getModelsArray();
                 
@@ -462,6 +508,11 @@
             const store = await waitForStore();
             const labels = [];
             
+            if (!store) {
+                console.error('[Extractor] Store não disponível - retornando lista vazia');
+                return labels;
+            }
+            
             try {
                 if (store.Label) {
                     const labelModels = store.Label._models || store.Label.getModelsArray();
@@ -489,6 +540,11 @@
         async extractLabelAssociations() {
             const store = await waitForStore();
             const associations = [];
+            
+            if (!store) {
+                console.error('[Extractor] Store não disponível - retornando lista vazia');
+                return associations;
+            }
             
             try {
                 if (store.LabelAssociation) {

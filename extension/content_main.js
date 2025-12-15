@@ -1454,12 +1454,14 @@ waitForWhatsAppUi(() => {
 
 // Listener para toggle do painel extractor
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'TOGGLE_EXTRACTOR_PANEL') {
+    if (message && message.action === 'TOGGLE_EXTRACTOR_PANEL') {
         toggleExtractorPanel();
         if (typeof sendResponse === 'function') {
             sendResponse({ success: true });
         }
+        return false;
     }
+    return false;
 });
 
 // Toggle do painel
