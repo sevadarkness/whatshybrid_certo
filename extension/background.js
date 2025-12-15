@@ -700,6 +700,8 @@ if (typeof module !== 'undefined' && module.exports) {
  */
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (!message || !message.type) return false;
+  
   switch (message.type) {
     case 'FLOWS_RUNTIME_READY':
       console.log('[Background] FlowsRuntime inicializado na tab:', sender.tab?.id);
@@ -711,7 +713,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
       }
       sendResponse && sendResponse({ acknowledged: true });
-      break;
+      return false;
     
     case 'AI_GENERATE_REPLY':
       handleAIGenerateReply(message, sendResponse);
@@ -721,7 +723,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       // Repassar para o content script
       forwardToWhatsAppTab(message);
       sendResponse && sendResponse({ forwarded: true });
-      break;
+      return false;
     
     case 'GET_FLOWS':
       if (chrome.storage && chrome.storage.local) {
@@ -730,7 +732,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
         return true;
       }
-      break;
+      return false;
     
     case 'SAVE_FLOWS':
       if (chrome.storage && chrome.storage.local) {
@@ -741,7 +743,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
         return true;
       }
-      break;
+      return false;
     
     case 'EXECUTE_FLOW':
       forwardToWhatsAppTab({
@@ -754,6 +756,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'GET_RUNTIME_STATUS':
       forwardToWhatsAppTab({ type: 'GET_RUNTIME_STATUS' }, sendResponse);
       return true;
+      
+    default:
+      return false;
   }
 });
 
@@ -1246,11 +1251,13 @@ let metricsState = {
 };
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (!message || !message.type) return false;
+  
   switch (message.type) {
     case 'METRICS_SYNCED':
       metricsState.lastSync = Date.now();
       console.log('[Background] Métricas sincronizadas:', message.data);
-      break;
+      return false;
 
     case 'METRICS_SYNC_ERROR':
       metricsState.errors.push({
@@ -1258,11 +1265,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         error: message.data
       });
       console.error('[Background] Erro de sync:', message.data);
-      break;
+      return false;
 
     case 'GET_METRICS_STATE':
       sendResponse(metricsState);
       return true;
+      
+    default:
+      return false;
   }
 });
 
@@ -1332,7 +1342,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 
 // Encaminhamento de comandos do popup/opções para o content script do WhatsApp
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (!message || !message.type) return;
+  if (!message || !message.type) return false;
 
   const relayTypes = [
     'SR_GET_STATS',
@@ -1342,12 +1352,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   ];
 
   if (!relayTypes.includes(message.type) && message.type !== 'GENERATE_DAILY_SUMMARY') {
-    return;
+    return false;
   }
 
   // Se a mensagem já veio de um content script, não redespachar
   if (sender && sender.tab && relayTypes.includes(message.type)) {
-    return;
+    return false;
   }
 
   if (message.type === 'GENERATE_DAILY_SUMMARY') {
@@ -1397,6 +1407,7 @@ chrome.storage.local.get('extractor_detected_messages', (result) => {
 
 // Handler para mensagens do extractor
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (!message) return false;
     
     // Redirecionar mensagens para o content script do extractor
     if (message.target === 'extractor_content') {
@@ -1428,19 +1439,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Handler para mudanças de mensagens detectadas
     if (message.action === 'EXTRACTOR_MESSAGE_CHANGE') {
         handleMessageChange(message.changeType, message.data);
-        return;
+        return false;
     }
     
     // Handler para detecção via DOM
     if (message.action === 'EXTRACTOR_DOM_DETECTION') {
         handleMessageChange(message.detectionType, message.data);
-        return;
+        return false;
     }
     
     // Handler para content script pronto
     if (message.action === 'EXTRACTOR_CONTENT_READY') {
         console.log('[Background] Extractor content script pronto na tab:', sender.tab?.id);
-        return;
+        return false;
     }
     
     // Handler para obter dados do extractor
@@ -1448,7 +1459,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (typeof sendResponse === 'function') {
             sendResponse({ success: true, data: extractorData });
         }
-        return;
+        return false;
     }
     
     // Handler para limpar dados do extractor
@@ -1462,8 +1473,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (typeof sendResponse === 'function') {
             sendResponse({ success: true });
         }
-        return;
+        return false;
     }
+    
+    return false;
 });
 
 // Processar mudança de mensagem
@@ -1658,8 +1671,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   try {
     if (msg && msg.type === 'EXTENSION_ERROR') {
       reportExtensionError(msg.payload || {});
+      return false;
     }
   } catch (e) {}
+  return false;
 });
 
 // Flush stored extension errors to backend (if configured)

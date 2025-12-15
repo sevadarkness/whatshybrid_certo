@@ -293,7 +293,20 @@
                         } else if (options.contactCard) {
                             return await this.sendContactMessage(chatModel, options.contactCard);
                         } else {
-                            return await this.Store.SendMessage.sendTextMsgToChat(chatModel, content, options);
+                            // Try multiple APIs in order of preference for WhatsApp Web API compatibility
+                            if (this.Store.SendMessage?.sendTextMsgToChat) {
+                                return await this.Store.SendMessage.sendTextMsgToChat(chatModel, content, options);
+                            }
+                            if (this.Store.SendMessage?.sendMsgToChat) {
+                                return await this.Store.SendMessage.sendMsgToChat(chatModel, content, options);
+                            }
+                            if (chatModel.sendMessage) {
+                                return await chatModel.sendMessage(content, options);
+                            }
+                            if (window.WWebJS?.sendMessage) {
+                                return await window.WWebJS.sendMessage(chatModel.id._serialized, content, options);
+                            }
+                            throw new Error('Nenhuma API de envio disponível');
                         }
                     } catch (error) {
                         console.error('Error sending message:', error);
@@ -889,7 +902,19 @@ async function handleSendMessageFromRuntime(data, respond) {
       options.mentionedJidList = data.options.mentionedIds;
     }
     
-    const result = await window.Store.SendMessage.sendTextMsgToChat(chat, data.content, options);
+    // Try multiple APIs in order of preference for WhatsApp Web API compatibility
+    let result;
+    if (window.Store.SendMessage?.sendTextMsgToChat) {
+      result = await window.Store.SendMessage.sendTextMsgToChat(chat, data.content, options);
+    } else if (window.Store.SendMessage?.sendMsgToChat) {
+      result = await window.Store.SendMessage.sendMsgToChat(chat, data.content, options);
+    } else if (chat.sendMessage) {
+      result = await chat.sendMessage(data.content, options);
+    } else if (window.WWebJS?.sendMessage) {
+      result = await window.WWebJS.sendMessage(chat.id._serialized, data.content, options);
+    } else {
+      throw new Error('Nenhuma API de envio disponível');
+    }
     
     respond({ 
       success: true, 
