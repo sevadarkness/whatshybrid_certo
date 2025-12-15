@@ -492,7 +492,7 @@ function fillMessageBox(text) {
     return;
   }
   
-  console.log("[content_main] Filling message box with text:", text?.substring(0, 50));
+  console.log("[content_main] Filling message box, text length:", text?.length);
   
   // Focus and clear
   editableDiv.focus();

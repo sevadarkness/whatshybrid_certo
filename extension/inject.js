@@ -97,7 +97,7 @@
      * Send message via DOM manipulation (fallback when Store is unavailable)
      */
     async function sendMessageViaDOM(text) {
-        console.log('[Inject][DOM] Attempting to send message via DOM:', text?.substring(0, 50));
+        console.log('[Inject][DOM] Attempting to send message via DOM, length:', text?.length);
         
         try {
             // 1. Find message box with multiple fallback selectors
@@ -135,7 +135,8 @@
             
             console.log('[Inject][DOM] Text inserted and events dispatched');
             
-            // 5. Wait for WhatsApp to process
+            // 5. Wait for WhatsApp to process the input and enable send button
+            // 150ms is empirically determined to be sufficient for WhatsApp's UI update cycle
             await new Promise(r => setTimeout(r, 150));
             
             // 6. Find and click send button with multiple fallback selectors
@@ -569,7 +570,7 @@
             this.Utils = {
                 // Message utilities
                 sendMessage: async (chat, content, options = {}) => {
-                    console.log('[Inject] Attempting to send message:', content?.substring(0, 50));
+                    console.log('[Inject] Attempting to send message, length:', content?.length);
                     
                     // Try Store-based methods first
                     try {
@@ -1182,7 +1183,7 @@ function setupStoreEventListeners() {
  * Handlers de ações vindas do runtime (FlowsRuntime)
  */
 async function handleSendMessageFromRuntime(data, respond) {
-  console.log('[Inject] handleSendMessageFromRuntime called with content:', data.content?.substring(0, 50));
+  console.log('[Inject] handleSendMessageFromRuntime called, content length:', data.content?.length);
   
   // Try Store-based methods first
   try {

@@ -27,23 +27,26 @@
     ],
 
     // Input de mensagem (WhatsApp Web 2024-2025)
+    // data-tab values are WhatsApp's internal tab indices for keyboard navigation
+    // 10 = main message input, 6 = alternative input state, 1 = fallback state
     messageInput: [
       '[data-testid="conversation-compose-box-input"]',
-      '[contenteditable="true"][data-tab="10"]',
-      '[contenteditable="true"][data-tab="6"]',
-      '[contenteditable="true"][data-tab="1"]',
+      '[contenteditable="true"][data-tab="10"]',  // Primary message input
+      '[contenteditable="true"][data-tab="6"]',   // Alternative state
+      '[contenteditable="true"][data-tab="1"]',   // Fallback state
       'footer [contenteditable="true"]',
       'div[role="textbox"][contenteditable="true"]',
       '[data-lexical-editor="true"]'
     ],
 
     // Botão de enviar (múltiplos fallbacks)
+    // data-tab="11" is WhatsApp's internal tab index for the send button
     sendButton: [
       '[data-testid="send"]',
       'button[aria-label*="Enviar"]',
       'button[aria-label*="Send"]',
       'span[data-icon="send"]',
-      'footer button[data-tab="11"]'
+      'footer button[data-tab="11"]'  // Tab index for send button
     ],
 
     // Lista de chats
@@ -82,10 +85,11 @@
     ],
 
     // Campo de busca
+    // data-tab="3" is WhatsApp's internal tab index for the search input field
     searchInput: [
       '[data-testid="chat-list-search"]',
       '[data-testid="search-input"]',
-      '[contenteditable="true"][data-tab="3"]',
+      '[contenteditable="true"][data-tab="3"]',  // Search field tab index
       'div[role="textbox"][data-tab="3"]'
     ],
 
