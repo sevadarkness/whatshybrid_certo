@@ -35,12 +35,43 @@
     }
 
     /**
+     * Aguarda inject estar pronto
+     */
+    async waitForInject(timeout = 10000) {
+      return new Promise((resolve) => {
+        let ready = false;
+        
+        const handler = (event) => {
+          if (event.data?.source === 'QUANTUM_INJECT' && event.data?.type === 'INJECT_READY') {
+            ready = true;
+            window.removeEventListener('message', handler);
+            resolve(true);
+          }
+        };
+        
+        window.addEventListener('message', handler);
+        
+        // Timeout
+        setTimeout(() => {
+          if (!ready) {
+            window.removeEventListener('message', handler);
+            console.warn('[FlowsRuntime] Timeout aguardando inject - continuando mesmo assim');
+            resolve(false);
+          }
+        }, timeout);
+      });
+    }
+
+    /**
      * Inicializa o runtime
      */
     async init() {
       if (this.initialized) return;
 
       console.log('[FlowsRuntime] Inicializando...');
+
+      // Aguardar inject estar pronto (com timeout)
+      await this.waitForInject();
 
       // Criar instância do engine
       this.engine = new FlowsEngine();
