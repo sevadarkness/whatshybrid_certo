@@ -1,0 +1,210 @@
+<!-- popup.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum CRM</title>
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --secondary: #3b82f6;
+            --bg: #050510;
+            --surface: rgba(16, 18, 48, 0.78);
+            --text: #eef0ff;
+            --text-muted: rgba(238, 240, 255, 0.65);
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 320px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .popup-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .popup-header img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .popup-header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: var(--surface);
+            font-size: 13px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ea0038;
+        }
+
+        .status-dot.connected {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .menu {
+            padding: 8px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .menu-item .label {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+            text-align: left;
+            line-height: 1.15;
+        }
+
+        .menu-item .subtitle {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .toggle-pill {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: var(--text);
+            background: rgba(0, 0, 0, 0.10);
+            user-select: none;
+        }
+
+        .toggle-pill.on {
+            background: rgba(139, 92, 246, 0.22);
+            border-color: rgba(59, 130, 246, 0.40);
+        }
+
+        .menu-item:hover {
+            background: var(--surface);
+        }
+
+        .menu-item .icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--surface);
+            margin: 8px 0;
+        }
+
+        .footer {
+            padding: 12px 16px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="popup-header">
+        <img src="icons/logo_quantum.png" alt="Quantum">
+        <h1>Quantum CRM</h1>
+    </div>
+
+    <div class="status-bar">
+        <span class="status-dot" id="status-dot"></span>
+        <span id="status-text">Verificando...</span>
+    </div>
+
+    <div class="menu">
+        <button class="menu-item" id="btn-open-panel">
+            <span class="icon">🖥️</span>
+            <span>Abrir Painel Completo</span>
+        </button>
+
+        <button class="menu-item" id="btn-quick-message">
+            <span class="icon">✉️</span>
+            <span>Enviar Mensagem Rápida</span>
+        </button>
+
+        <button class="menu-item" id="btn-recovery-toggle" title="Ativar/desativar monitoramento local para recuperar versões anteriores de mensagens e mídias que forem apagadas/editadas (somente mensagens recebidas)">
+            <span class="icon">🛟</span>
+            <span class="label">
+                <span>Recovery de Msg/fotos Apagadas ou Editadas</span>
+                <span class="subtitle">de quem fala com você</span>
+            </span>
+            <span class="toggle-pill" id="recovery-toggle-pill">Carregando…</span>
+        </button>
+
+        <div class="divider"></div>
+
+        <button class="menu-item" id="btn-dashboard">
+            <span class="icon">📊</span>
+            <span>Dashboard</span>
+        </button>
+
+        <button class="menu-item" id="btn-bulk">
+            <span class="icon">📨</span>
+            <span>Envios em Massa</span>
+        </button>
+
+        <button class="menu-item" id="btn-flows">
+            <span class="icon">🔄</span>
+            <span>Automações</span>
+        </button>
+
+        <button class="menu-item" id="btn-extractor">
+            <span class="icon">📥</span>
+            <span>Extrator de Dados</span>
+        </button>
+
+        <div class="divider"></div>
+
+        <button class="menu-item" id="btn-settings">
+            <span class="icon">⚙️</span>
+            <span>Configurações</span>
+        </button>
+    </div>
+
+    <div class="footer">
+        Quantum CRM v2.0.0
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

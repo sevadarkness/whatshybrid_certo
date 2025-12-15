@@ -1,0 +1,23 @@
+/* overlays/overlays.css */
+/* Estilos adicionais para overlays (a maior parte é injetada via JS) */
+
+#quantum-overlay-container,
+.quantum-overlay-container {
+    pointer-events: none;
+}
+
+.quantum-overlay {
+    pointer-events: all;
+}
+
+/* Ajustes para toasts em telas menores */
+@media (max-width: 768px) {
+    .quantum-toast-container {
+        right: 12px;
+        left: 12px;
+    }
+
+    .quantum-toast {
+        max-width: 100%;
+    }
+}

@@ -1,0 +1,142 @@
+/* workspace/modules/help/help.css */
+
+.whs-module {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.whs-module-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.whs-module-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.whs-module-subtitle {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.whs-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.whs-help-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.whs-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.whs-card h3 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.whs-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.whs-full {
+  grid-column: 1 / -1;
+}
+
+.whs-hint {
+  margin-top: 10px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.whs-status {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.whs-status-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid rgba(42, 57, 66, 0.6);
+  border-radius: var(--radius-md);
+}
+
+.whs-pill {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+}
+
+.whs-checklist {
+  padding-left: 18px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.whs-logs {
+  margin-top: 10px;
+  max-height: 420px;
+  overflow: auto;
+  border: 1px solid rgba(42, 57, 66, 0.6);
+  border-radius: var(--radius-md);
+}
+
+.whs-log-item {
+  padding: 10px;
+  border-bottom: 1px solid rgba(42, 57, 66, 0.6);
+}
+
+.whs-log-item:last-child {
+  border-bottom: none;
+}
+
+.whs-log-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.whs-strong {
+  font-weight: 700;
+}
+
+.whs-log-msg {
+  color: var(--text-secondary);
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 960px) {
+  .whs-help-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,32 @@
+<!-- workspace/modules/flows/flows.html -->
+<div class="whs-module whs-flows" data-module="flows">
+  <div class="whs-module-header">
+    <div>
+      <h2>Automações (Flows)</h2>
+      <div class="whs-module-subtitle" id="whs-flows-subtitle">Editor de flows do backend (disparos por mensagem)</div>
+    </div>
+    <div class="whs-actions">
+      <button class="btn secondary" id="whs-flows-refresh">Atualizar</button>
+      <button class="btn secondary" id="whs-flows-export">Exportar JSON</button>
+      <button class="btn secondary" id="whs-flows-import">Importar JSON</button>
+      <button class="btn primary" id="whs-flows-save">Salvar no backend</button>
+    </div>
+  </div>
+
+  <div class="whs-flows-layout">
+    <aside class="whs-flows-sidebar">
+      <div class="whs-flows-sidebar-top">
+        <input type="search" class="whs-input" id="whs-flows-search" placeholder="Buscar flows..." />
+        <button class="btn primary" id="whs-flow-new">+ Novo flow</button>
+      </div>
+      <div class="whs-flows-status" id="whs-flows-status"></div>
+      <div class="whs-flow-list" id="whs-flow-list"></div>
+    </aside>
+
+    <section class="whs-flow-editor" id="whs-flow-editor">
+      <div class="whs-empty">Selecione um flow ou crie um novo.</div>
+    </section>
+  </div>
+
+  <input type="file" id="whs-flows-file" accept="application/json" style="display:none" />
+</div>

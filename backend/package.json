@@ -1,0 +1,48 @@
+{
+  "name": "whats-hybrid-backend-v5",
+  "version": "5.0.0",
+  "description": "Backend Node/Express para WhatsHybrid CRM & AI Suite v2",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:generate": "npx prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.13.0",
+    "@anthropic-ai/sdk": "*",
+    "@google/generative-ai": "*",
+    "axios": "*",
+    "bcryptjs": "*",
+    "bull": "*",
+    "bullmq": "*",
+    "cheerio": "*",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "cron-parser": "*",
+    "express": "^4.19.2",
+    "express-rate-limit": "*",
+    "groq-sdk": "*",
+    "openai": "^4.52.0",
+    "ioredis": "*",
+    "joi": "*",
+    "pino": "^9.0.0",
+    "lodash": "*",
+    "luxon": "*",
+    "morgan": "*",
+    "mongoose": "*",
+    "node-cron": "*",
+    "rate-limit-redis": "*",
+    "socket.io": "^4.7.5",
+    "jsonwebtoken": "*",
+    "slugify": "*",
+    "stripe": "*",
+    "uuid": "*",
+    "winston": "*"
+  },
+  "devDependencies": {
+    "nodemon": "*",
+    "prisma": "^5.13.0"
+  }
+}

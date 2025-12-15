@@ -1,0 +1,191 @@
+
+// Toast Notification System
+function showToast(message, duration = 3000) {
+    let toast = document.createElement('div');
+    toast.innerText = message;
+    toast.style.position = 'fixed';
+    toast.style.bottom = '30px';
+    toast.style.left = '50%';
+    toast.style.transform = 'translateX(-50%)';
+    toast.style.background = 'rgba(40, 40, 50, 0.95)';
+    toast.style.color = '#fff';
+    toast.style.padding = '10px 22px';
+    toast.style.borderRadius = '7px';
+    toast.style.zIndex = 99999;
+    toast.style.fontSize = '15px';
+    toast.style.boxShadow = '0 2px 12px rgba(0,0,0,0.16)';
+    document.body.appendChild(toast);
+    setTimeout(()=>{toast.remove();}, duration);
+}
+
+
+const kanbanEl = document.getElementById("kanban");
+const syncBtn = document.getElementById("syncBtn");
+
+let pipelineStages = [];
+let backendUrl = "";
+let extensionKey = "";
+let dealsByStage = {};
+
+function createColumn(stage) {
+  const col = document.createElement("div");
+  col.className = "column";
+  col.dataset.stage = stage;
+
+  const header = document.createElement("div");
+  header.className = "column-header";
+  header.innerHTML = `<span>${stage}</span><span id="count-${stage}">0</span>`;
+
+  const body = document.createElement("div");
+  body.className = "column-body";
+  body.addEventListener("dragover", (e) => e.preventDefault());
+  body.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const id = e.dataTransfer.getData("deal-id");
+    const card = document.querySelector(`[data-deal-id="${id}"]`);
+    if (card && card.parentElement !== body) {
+      body.appendChild(card);
+      persistMove(id, stage);
+    }
+  });
+
+  col.appendChild(header);
+  col.appendChild(body);
+  kanbanEl.appendChild(col);
+}
+
+function addCardToUI(deal) {
+  const body = document.querySelector(`.column[data-stage="${deal.stage}"] .column-body`);
+  if (!body) return;
+  const el = document.createElement("div");
+  el.className = "card";
+  el.draggable = true;
+  el.dataset.dealId = deal.id;
+  const tagsHtml = (deal.tags || []).map(t => `<span class="tag" style="background:${t.color};">${t.name}</span>`).join(" ");
+  el.innerHTML = `
+    <div><strong>${deal.name || "Sem nome"}</strong></div>
+    <small>${deal.phone || ""}</small><br/>
+    ${tagsHtml}
+  `;
+  el.addEventListener("dragstart", (e) => {
+    e.dataTransfer.setData("deal-id", deal.id);
+  });
+  el.addEventListener("dblclick", () => {
+    if (deal.externalId) {
+      chrome.tabs.create({ url: "https://web.whatsapp.com" });
+    }
+  });
+  body.appendChild(el);
+}
+
+function updateCounts() {
+  pipelineStages.forEach((stage) => {
+    const body = document.querySelector(`.column[data-stage="${stage}"] .column-body`);
+    const countEl = document.getElementById(`count-${stage}`);
+    if (body && countEl) {
+      countEl.textContent = String(body.children.length);
+    }
+  });
+}
+
+async function loadConfig() {
+  return new Promise((resolve) => {
+    chrome.storage.sync.get(
+      ["backendUrl", "extensionKey", "pipelineStages"],
+      (data) => {
+        backendUrl = data.backendUrl || "";
+        extensionKey = data.extensionKey || "";
+        pipelineStages = data.pipelineStages && data.pipelineStages.length
+          ? data.pipelineStages
+          : ["Novo", "Em contato", "Em negociação", "Fechado", "Perdido"];
+        resolve();
+      }
+    );
+  });
+}
+
+async function fetchDeals() {
+  if (!backendUrl) return;
+  const res = await fetch(`${backendUrl}/crm/deals`, {
+    headers: {
+      "Content-Type": "application/json",
+      "x-extension-key": extensionKey || ""
+    }
+  });
+  if (!res.ok) return;
+  const data = await res.json();
+  dealsByStage = {};
+  data.forEach((deal) => {
+    const stage = deal.stage || pipelineStages[0];
+    if (!dealsByStage[stage]) dealsByStage[stage] = [];
+    dealsByStage[stage].push(deal);
+  });
+}
+
+async function persistMove(id, newStage) {
+  if (!backendUrl) return;
+  try {
+    await fetch(`${backendUrl}/crm/deals/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "x-extension-key": extensionKey || ""
+      },
+      body: JSON.stringify({ stage: newStage })
+    });
+    updateCounts();
+  } catch (e) {
+    console.error("Erro ao atualizar estágio", e);
+  }
+}
+
+function renderKanban() {
+  kanbanEl.innerHTML = "";
+  pipelineStages.forEach((stage) => createColumn(stage));
+  Object.keys(dealsByStage).forEach((stage) => {
+    dealsByStage[stage].forEach(addCardToUI);
+  });
+  updateCounts();
+}
+
+async function init() {
+  await loadConfig();
+  await fetchDeals();
+  renderKanban();
+}
+
+syncBtn.addEventListener("click", () => init());
+
+init();
+
+
+
+// Função universal para exportar CRM como CSV (dados do chrome.storage.local["crm_data"])
+document.getElementById('btnExportCSV').onclick = function() {
+    if (!chrome || !chrome.storage || !chrome.storage.local) {
+        showToast("Recurso não disponível aqui.");
+        return;
+    }
+    chrome.storage.local.get("crm_data", function(res) {
+        let arr = res.crm_data;
+        if (!arr || !Array.isArray(arr) || arr.length === 0) {
+            showToast("Nenhum dado CRM para exportar.");
+            return;
+        }
+        // Obter colunas
+        let cols = Object.keys(arr[0]);
+        let csv = cols.join(",") + "\n";
+        arr.forEach(row => {
+            let line = cols.map(c => JSON.stringify(row[c] || "")).join(",");
+            csv += line + "\n";
+        });
+        let blob = new Blob([csv], {type:'text/csv'});
+        let link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'crm_export.csv';
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(()=>{URL.revokeObjectURL(link.href);link.remove();},700);
+        showToast("Exportação CSV gerada!");
+    });
+};

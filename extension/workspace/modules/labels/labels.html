@@ -1,0 +1,40 @@
+<!-- workspace/modules/labels/labels.html -->
+<div class="whs-module whs-labels" data-module="labels">
+  <div class="whs-module-header">
+    <div>
+      <h2>Rótulos & Tags</h2>
+      <div class="whs-module-subtitle">Edite tags do CRM e visualize labels do WhatsApp</div>
+    </div>
+    <div class="whs-actions">
+      <button class="btn secondary" id="whs-labels-reload">Atualizar</button>
+      <button class="btn primary" id="whs-labels-save">Salvar tags do CRM</button>
+    </div>
+  </div>
+
+  <div class="whs-labels-grid">
+    <section class="whs-card">
+      <div class="whs-card-header">
+        <h3>Tags do CRM (defaultTags)</h3>
+        <div class="whs-card-actions">
+          <button class="btn secondary" id="whs-tag-add">+ Adicionar</button>
+        </div>
+      </div>
+
+      <div class="whs-hint">Essas tags aparecem no painel CRM dentro do WhatsApp. Elas ficam em <code>chrome.storage.sync.defaultTags</code>.</div>
+
+      <div class="whs-tags-editor" id="whs-tags-editor"></div>
+    </section>
+
+    <section class="whs-card">
+      <div class="whs-card-header">
+        <h3>Labels do WhatsApp</h3>
+        <div class="whs-card-actions">
+          <button class="btn secondary" id="whs-wa-labels-refresh">Recarregar</button>
+        </div>
+      </div>
+      <div class="whs-hint">Requer WhatsApp Web aberto e conectado.</div>
+
+      <div class="whs-wa-labels" id="whs-wa-labels"></div>
+    </section>
+  </div>
+</div>

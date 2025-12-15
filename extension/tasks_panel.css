@@ -1,0 +1,9 @@
+/* tasks_panel.css
+ * Estilos adicionais (opcionais) para o painel de Tasks.
+ * O estilo principal é injetado via tasks_panel.js.
+ */
+
+#quantum-tasks-panel {
+  /* As principais regras são definidas em tasks_panel.js.
+     Este arquivo existe apenas para permitir customizações futuras. */
+}

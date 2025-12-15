@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campanhas (Bulk Wizard) - WhatsHybrid</title>
+
+  <!-- Design System + Wizard layout -->
+  <link rel="stylesheet" href="assets/shared-components.css" />
+  <link rel="stylesheet" href="assets/bulk-wizard.css" />
+</head>
+<body>
+  <div class="bulk-app">
+
+    <div class="bulk-header">
+      <div class="bulk-title">
+        <h1>Campanhas (Bulk)</h1>
+        <p>Wizard à prova de erro: lista → mensagem → modo → segurança → revisão → execução</p>
+      </div>
+      <div class="status-row">
+        <span class="badge badge--muted" id="backend-status">Backend: verificando…</span>
+        <span class="badge badge--muted" id="wa-status">WhatsApp Web: não verificado</span>
+      </div>
+    </div>
+
+    <div class="wizard-shell">
+      <div class="wizard-card">
+
+        <!-- Stepper -->
+        <div class="stepper" id="bulk-stepper">
+          <div class="step" data-step="1"><span class="num">1</span><span class="label">Lista</span></div>
+          <div class="step" data-step="2"><span class="num">2</span><span class="label">Mensagem</span></div>
+          <div class="step" data-step="3"><span class="num">3</span><span class="label">Modo</span></div>
+          <div class="step" data-step="4"><span class="num">4</span><span class="label">Segurança</span></div>
+          <div class="step" data-step="5"><span class="num">5</span><span class="label">Revisão</span></div>
+          <div class="step" data-step="6"><span class="num">6</span><span class="label">Execução</span></div>
+        </div>
+
+        <div class="wizard-body">
+
+          <!-- STEP 1: LISTA -->
+          <section class="wizard-step" data-step="1">
+            <div class="section-grid">
+              <div>
+                <div class="section-title">1) Lista de destinatários</div>
+                <div class="section-subtitle"></div>
+
+                <div class="tabs" style="margin-top:10px;">
+                  <button class="tab active" data-tab="src-paste">Colar</button>
+                  <button class="tab" data-tab="src-csv">CSV</button>
+                  <button class="tab" data-tab="src-crm">CRM/Contatos</button>
+                </div>
+
+                <div class="tab-panels" style="margin-top:10px;">
+
+                  <div class="tab-panel active" data-panel="src-paste">
+                    <div class="field">
+                      <label>Números (um por linha). Opcional: <code>telefone;nome;cidade</code></label>
+                      <textarea id="recipients-text" class="input" rows="10" placeholder="5511999999999;Maria;SP\n5511988888888;João;RJ\n...\n"></textarea>
+                      <div class="help-text">Dica: variáveis ficam disponíveis como <code>{nome}</code>, <code>{cidade}</code>…</div>
+                    </div>
+                  </div>
+
+                  <div class="tab-panel" data-panel="src-csv">
+                    <div class="field">
+                      <label>Importar CSV</label>
+                      <input id="csv-file" type="file" accept=".csv,text/csv" class="input" />
+                      <div class="help-text">Formato: <code>telefone,nome,cidade</code> (cabeçalho recomendado).</div>
+                    </div>
+                    <div class="help-text" style="margin-top:8px;">
+                      Se o CSV tiver colunas extras, elas viram variáveis. Ex.: <code>{plano}</code>.
+                    </div>
+                  </div>
+
+                  <div class="tab-panel" data-panel="src-crm">
+                    <div class="field">
+                      <label>Fonte</label>
+                      <div class="segmented" role="tablist">
+                        <button id="btn-load-workspace" class="active" type="button">Workspace (CRM)</button>
+                        <button id="btn-load-wa" type="button">WhatsApp</button>
+                      </div>
+                      <div class="help-text">Se estiver vazio, abra o módulo <strong>Contato/CRM</strong> e sincronize / carregue contatos.</div>
+                    </div>
+
+                    <div class="field" style="margin-top:10px;">
+                      <label>Buscar</label>
+                      <input id="crm-search" type="search" class="input" placeholder="Buscar por nome ou número" />
+                    </div>
+
+                    <div id="crm-list" class="crm-list" style="margin-top:10px;">
+                      <div class="state state-empty" style="padding:14px;">
+                        <div class="state-icon">👥</div>
+                        <div class="state-title">Nenhum contato carregado</div>
+                        <div class="state-text">Clique em <strong>Workspace (CRM)</strong> ou <strong>WhatsApp</strong> para listar contatos.</div>
+                      </div>
+                    </div>
+
+                    <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                      <button class="btn secondary" id="btn-crm-select-all" type="button">Selecionar tudo</button>
+                      <button class="btn ghost" id="btn-crm-clear" type="button">Limpar seleção</button>
+                      <span class="help-text" id="crm-selected-count">0 selecionados</span>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div style="margin-top:12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                  <button class="btn secondary" id="btn-validate" type="button">Validar lista</button>
+                  <span class="help-text" id="list-hint">Valide antes de avançar.</span>
+                </div>
+
+              </div>
+
+              <div>
+                <div class="section-title"></div>
+                <div class="section-subtitle">Duplicados removidos. Números inválidos detectados.</div>
+
+                <div id="validation-box" class="state state-empty" style="margin-top:10px;">
+                  <div class="state-icon">✅</div>
+                  <div class="state-title">Ainda não validado</div>
+                  <div class="state-text">Clique em <strong>Validar lista</strong> para ver totais, inválidos e preview.</div>
+                </div>
+
+                <div class="inline-warning" id="validation-warning" style="display:none; margin-top:10px;"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- STEP 2: MENSAGEM -->
+          <section class="wizard-step" data-step="2">
+            <div class="section-title">2) Mensagem + variáveis</div>
+            <div class="section-subtitle">Use <code>{nome}</code>, <code>{cidade}</code> (do CSV) e <code>{phone}</code> sempre disponível.</div>
+
+            <div class="field" style="margin-top:10px;">
+              <label>Mensagem</label>
+              <textarea id="message-template" class="input" rows="8" placeholder="Olá {nome}! Vi que você é de {cidade}. Posso te ajudar?"></textarea>
+            </div>
+
+            <div class="section-grid" style="margin-top:10px;">
+              <div>
+                <div class="section-title">Variáveis detectadas</div>
+                <div class="small-note">Baseado na sua lista (CSV/colado). Sempre incluímos <code>{phone}</code>.</div>
+                <div id="vars-box" class="vars-box" style="margin-top:10px;"></div>
+              </div>
+              <div>
+                <div class="section-title">Preview rápido</div>
+                <div class="small-note">Exemplo com o primeiro contato válido.</div>
+                <div id="quick-preview" class="preview-box" style="margin-top:10px;">
+                  <div class="state state-empty">
+                    <div class="state-icon">👀</div>
+                    <div class="state-title">Sem preview ainda</div>
+                    <div class="state-text">Valide a lista (passo 1) e preencha a mensagem.</div>
+                  </div>
+                </div>
+                <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+                  <button class="btn secondary" id="btn-refresh-preview" type="button">Atualizar preview</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- STEP 3: MODO -->
+          <section class="wizard-step" data-step="3">
+            <div class="section-title">3) Modo de envio</div>
+            <div class="section-subtitle">Escolha o modo. O wizard mostra recomendações e requisitos.</div>
+
+            <div class="cards" style="margin-top:12px;">
+              <label class="card radio-card">
+                <input type="radio" name="send-mode" value="backend" checked />
+                <div>
+                  <div class="card-title">API / Backend (recomendado)</div>
+                  <div class="card-subtitle">Mais estável. Fila server-side. Melhor para escala.</div>
+                  <div class="help-text" style="margin-top:6px;">Requer backend configurado + licença.</div>
+                </div>
+              </label>
+
+              <label class="card radio-card">
+                <input type="radio" name="send-mode" value="dom" />
+                <div>
+                  <div class="card-title">DOM (WhatsApp Web)</div>
+                  <div class="card-subtitle">Envia pela sessão do WhatsApp Web. Precisa estar aberto/logado.</div>
+                  <div class="help-text" style="margin-top:6px;">Recomendado para testes e contingência.</div>
+                </div>
+              </label>
+            </div>
+
+            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+              <button class="btn secondary" id="btn-test-backend" type="button">Testar backend</button>
+              <button class="btn secondary" id="btn-test-wa" type="button">Testar WhatsApp Web</button>
+              <button class="btn ghost" id="btn-open-settings" type="button">Abrir configurações</button>
+            </div>
+
+            <div id="mode-hints" style="margin-top:12px;"></div>
+          </section>
+
+          <!-- STEP 4: SEGURANÇA -->
+          <section class="wizard-step" data-step="4">
+            <div class="section-title">4) Segurança (delay / limites)</div>
+            <div class="section-subtitle">Evite spam e bloqueios. O modo DOM tem um “Safe Mode”.</div>
+
+            <div class="section-grid" style="margin-top:10px;">
+              <div>
+                <div class="field">
+                  <label>Delay mínimo (segundos)</label>
+                  <input id="delay-min" type="number" min="2" value="5" class="input" />
+                </div>
+                <div class="field" style="margin-top:10px;">
+                  <label>Delay máximo (segundos)</label>
+                  <input id="delay-max" type="number" min="2" value="12" class="input" />
+                </div>
+                <div class="help-text" style="margin-top:6px;">O wizard usa um delay aleatório entre mínimo e máximo.</div>
+              </div>
+              <div>
+                <div class="field">
+                  <label>Perfil de envio</label>
+                  <select id="safety-profile" class="input">
+                    <option value="safe" selected>Modo seguro (recomendado)</option>
+                    <option value="normal">Normal</option>
+                    <option value="fast">Rápido (maior risco)</option>
+                  </select>
+                  <div class="help-text" style="margin-top:6px;">No modo rápido, você pode ter mais falhas/bloqueios.</div>
+                </div>
+
+                <div class="inline-warning" id="safety-warning" style="margin-top:10px; display:none;"></div>
+              </div>
+            </div>
+
+          </section>
+
+          <!-- STEP 5: REVISÃO -->
+          <section class="wizard-step" data-step="5">
+            <div class="section-title">5) Revisão (preview real)</div>
+            <div class="section-subtitle">Confira lista, variáveis e mensagem real antes de executar.</div>
+
+            <div id="review-box" class="state state-empty" style="margin-top:10px;">
+              <div class="state-icon">🧪</div>
+              <div class="state-title">Nada para revisar ainda</div>
+              <div class="state-text">Complete os passos anteriores e volte aqui.</div>
+            </div>
+
+            <div id="review-preview" style="margin-top:12px;"></div>
+
+            <div style="margin-top:12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <label style="display:flex; gap:8px; align-items:center;">
+                <input id="confirm-review" type="checkbox" />
+                <span class="small-note">Confirmo que revisei o preview e entendo as limitações do modo escolhido.</span>
+              </label>
+            </div>
+          </section>
+
+          <!-- STEP 6: EXECUÇÃO -->
+          <section class="wizard-step" data-step="6">
+            <div class="section-title">6) Execução (fila + controles)</div>
+            <div class="section-subtitle">Acompanhe progressos, pause/resume e exporte logs depois (quando disponível).</div>
+
+            <div id="run-box" class="state state-empty" style="margin-top:10px;">
+              <div class="state-icon">🚀</div>
+              <div class="state-title">Pronto para executar</div>
+              <div class="state-text">Clique em <strong>Iniciar</strong> para começar a fila.</div>
+            </div>
+
+            <div id="run-progress" style="margin-top:12px; display:none;">
+              <div class="progress" style="margin-bottom:10px;">
+                <div class="bar" id="progress-bar" style="width:0%;"></div>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                <span class="badge badge--info" id="progress-text">0/0</span>
+                <span class="help-text" id="progress-status">-</span>
+              </div>
+
+              <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn secondary" id="btn-pause" type="button">Pause</button>
+                <button class="btn secondary" id="btn-resume" type="button" style="display:none;">Resume</button>
+                <button class="btn danger" id="btn-stop" type="button">Stop</button>
+              </div>
+
+              <div class="section-title" style="margin-top:14px;">Log</div>
+              <div class="log" id="run-log" style="margin-top:8px;"></div>
+            </div>
+
+            <div class="section-title" style="margin-top:14px;">Campanhas recentes (Backend)</div>
+            <div class="small-note">Se você usou API/Backend, sua campanha aparece aqui.</div>
+
+            <div style="margin-top:10px; overflow:auto; border:1px solid var(--border-color); border-radius: var(--radius-lg);">
+              <table class="table" id="campaigns-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Status</th>
+                    <th>Criada</th>
+                    <th>Mensagens</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td colspan="5" class="small-note">Carregando…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+        </div>
+
+        <div class="wizard-footer">
+          <div class="left">
+            <button class="btn ghost" id="btn-back" type="button">Voltar</button>
+          </div>
+          <div class="right">
+            <button class="btn secondary" id="btn-next" type="button">Próximo</button>
+            <button class="btn primary" id="btn-run" type="button" style="display:none;">Iniciar</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="utils/crypto-utils.js"></script>
+  <script src="whatsHybrid.bridge.js"></script>
+  <script src="bulk.js"></script>
+</body>
+</html>

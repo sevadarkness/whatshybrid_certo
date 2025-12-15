@@ -1,0 +1,96 @@
+<!-- workspace/modules/smart-replies/smart-replies.html -->
+<div class="whs-module whs-ai" data-module="smart-replies">
+  <div class="whs-module-header">
+    <div>
+      <h2>Respostas IA</h2>
+      <div class="whs-module-subtitle" id="whs-ai-subtitle">Preferências e teste de Smart Replies (backend)</div>
+    </div>
+    <div class="whs-actions">
+      <button class="btn secondary" id="whs-ai-save">Salvar preferências</button>
+      <button class="btn primary" id="whs-ai-generate">Gerar respostas</button>
+    </div>
+  </div>
+
+  <div class="whs-ai-grid">
+    <section class="whs-card">
+      <h3>Status</h3>
+      <div id="whs-ai-status" class="whs-status"></div>
+      <div class="whs-hint">As rotas de IA exigem <code>backendUrl</code>, <code>extensionKey</code> e <code>licenseKey</code>.</div>
+    </section>
+
+    <section class="whs-card">
+      <h3>Preferências</h3>
+      <div class="whs-form">
+        <div class="whs-field">
+          <label>
+            <input type="checkbox" id="whs-ai-enabled" />
+            Habilitar IA
+          </label>
+        </div>
+
+        <div class="whs-field">
+          <label>Tom (aiTone)</label>
+          <select id="whs-ai-tone" class="whs-input">
+            <option value="profissional">Profissional</option>
+            <option value="informal">Informal</option>
+            <option value="convincente">Convincente / Vendas</option>
+            <option value="suporte">Suporte / Calmo</option>
+          </select>
+        </div>
+
+        <div class="whs-field">
+          <label>
+            <input type="checkbox" id="whs-ai-insights" />
+            Habilitar insights
+          </label>
+        </div>
+
+        <div class="whs-field">
+          <label>Seu nome / assinatura</label>
+          <input id="whs-ai-user-name" class="whs-input" placeholder="Ex.: João da Quantum" />
+        </div>
+
+        <div class="whs-field">
+          <label>
+            <input type="checkbox" id="whs-ai-emoji" checked />
+            Permitir emojis
+          </label>
+        </div>
+
+        <div class="whs-field">
+          <label>Idioma</label>
+          <select id="whs-ai-language" class="whs-input">
+            <option value="Portuguese">Portuguese</option>
+            <option value="English">English</option>
+            <option value="Spanish">Spanish</option>
+            <option value="French">French</option>
+          </select>
+        </div>
+
+        <div class="whs-field">
+          <label>
+            <input type="checkbox" id="whs-ai-force-language" />
+            Forçar idioma selecionado
+          </label>
+        </div>
+
+        <div class="whs-field">
+          <label>
+            <input type="checkbox" id="whs-ai-transliterate" />
+            Transliterate (alfabeto latino)
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section class="whs-card whs-full">
+      <h3>Teste</h3>
+      <div class="whs-field">
+        <label>Mensagem do cliente</label>
+        <textarea id="whs-ai-message" class="whs-input" rows="4" placeholder="Cole aqui a mensagem recebida...\nEx: \"Oi, vocês fazem entrega?\""></textarea>
+      </div>
+
+      <div class="whs-ai-results" id="whs-ai-results"></div>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+<!-- workspace/modules/chats/chats.html -->
+<div class="whs-module whs-chats" data-module="chats">
+  <div class="whs-module-header">
+    <div>
+      <h2>Conversas</h2>
+      <div class="whs-module-subtitle" id="whs-chats-subtitle">Lista de chats do WhatsApp Web (via bridge)</div>
+    </div>
+    <div class="whs-actions">
+      <input type="search" class="whs-input" id="whs-chats-search" placeholder="Buscar por nome/número..." />
+      <button class="btn secondary" id="whs-chats-refresh">Atualizar</button>
+    </div>
+  </div>
+
+  <div class="whs-chats-layout">
+    <aside class="whs-chats-sidebar">
+      <div class="whs-chats-status" id="whs-chats-status"></div>
+      <div class="whs-chats-list" id="whs-chats-list"></div>
+    </aside>
+
+    <section class="whs-chat-view">
+      <div class="whs-chat-header" id="whs-chat-header">
+        <div class="whs-chat-title">
+          <div class="whs-chat-name" id="whs-chat-name">Selecione uma conversa</div>
+          <div class="whs-chat-meta" id="whs-chat-meta"></div>
+        </div>
+        <div class="whs-chat-actions">
+          <button class="btn ghost" id="whs-chat-open" title="Abrir no WhatsApp">Abrir</button>
+          <button class="btn ghost" id="whs-chat-reload" title="Recarregar mensagens">↻</button>
+        </div>
+      </div>
+
+      <div class="whs-chat-messages" id="whs-chat-messages">
+        <div class="whs-empty">Nenhuma conversa selecionada.</div>
+      </div>
+
+      <div class="whs-chat-compose">
+        <textarea class="whs-input" id="whs-chat-text" rows="2" placeholder="Digite sua mensagem..."></textarea>
+        <button class="btn primary" id="whs-chat-send" disabled>Enviar</button>
+      </div>
+    </section>
+  </div>
+</div>

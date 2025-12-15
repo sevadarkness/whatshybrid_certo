@@ -1,0 +1,585 @@
+/* assets/shared-components.css */
+/* Quantum / WhatsHybrid - Lightweight Design System (AI dark theme)
+
+   ✅ Tokens (cores, espaçamentos, tipografia)
+   ✅ Componentes: Button, Select, Input, Modal, Toast, Badge, Tabs, Stepper
+   ✅ Estados: Skeleton, Empty, Error, Paywall
+
+   Este arquivo sobrescreve (override) variáveis do panel.css para trocar a
+   paleta para roxo/azul/preto sem quebrar módulos existentes.
+*/
+
+:root {
+  /* ------------------------------------------------------------
+     Paleta AI (roxo / azul / preto)
+     ------------------------------------------------------------ */
+  --ai-black-950: #03030a;
+  --ai-black-900: #050510;
+  --ai-black-850: #07071a;
+  --ai-black-800: #0a0b1f;
+
+  --ai-surface-1: rgba(16, 18, 48, 0.70);
+  --ai-surface-2: rgba(24, 28, 66, 0.74);
+  --ai-surface-3: rgba(34, 40, 92, 0.58);
+
+  --ai-border: rgba(255, 255, 255, 0.08);
+  --ai-border-2: rgba(255, 255, 255, 0.14);
+
+  --ai-text: #eef0ff;
+  --ai-text-2: rgba(238, 240, 255, 0.74);
+  --ai-text-3: rgba(238, 240, 255, 0.54);
+
+  --ai-purple: #8b5cf6;
+  --ai-purple-2: #a78bfa;
+  --ai-blue: #3b82f6;
+  --ai-blue-2: #60a5fa;
+
+  --ai-gradient: linear-gradient(90deg, rgba(139, 92, 246, 1), rgba(59, 130, 246, 1));
+  --ai-gradient-soft: linear-gradient(90deg, rgba(139, 92, 246, 0.22), rgba(59, 130, 246, 0.16));
+  --ai-glow: 0 0 0 3px rgba(139, 92, 246, 0.20), 0 0 26px rgba(59, 130, 246, 0.20);
+
+  /* ------------------------------------------------------------
+     Tokens (spacing / radius / motion)
+     ------------------------------------------------------------ */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+
+  --transition-fast: 120ms ease;
+  --transition-normal: 220ms ease;
+  --transition-slow: 380ms ease;
+
+  --focus-ring: 0 0 0 3px rgba(139, 92, 246, 0.22);
+
+  /* ------------------------------------------------------------
+     Backwards compatible variables (used throughout panel.css)
+     ------------------------------------------------------------ */
+  --primary: var(--ai-purple);
+  --primary-dark: #6d28d9;
+  --primary-light: var(--ai-purple-2);
+  --secondary: var(--ai-blue);
+  --info: var(--ai-blue-2);
+
+  /* Success dentro da paleta AI (azul) */
+  --success: #60a5fa;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+
+  /* Backgrounds */
+  --bg-primary: var(--ai-black-900);
+  --bg-app:
+    radial-gradient(1200px 780px at 18% 14%, rgba(139, 92, 246, 0.18), transparent 60%),
+    radial-gradient(1000px 680px at 84% 18%, rgba(59, 130, 246, 0.18), transparent 55%),
+    radial-gradient(700px 520px at 55% 90%, rgba(139, 92, 246, 0.10), transparent 60%),
+    var(--ai-black-900);
+
+  --bg-secondary: #0b0d22;
+  --bg-tertiary: #101336;
+  --bg-hover: rgba(139, 92, 246, 0.12);
+  --bg-active: rgba(59, 130, 246, 0.10);
+
+  /* Text */
+  --text-primary: var(--ai-text);
+  --text-secondary: var(--ai-text-2);
+  --text-muted: var(--ai-text-3);
+
+  /* Borders + shadows */
+  --border-color: var(--ai-border);
+  --border-light: var(--ai-border-2);
+
+  --shadow-sm: 0 1px 10px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 20px 70px rgba(0, 0, 0, 0.55);
+}
+
+html, body {
+  background: var(--bg-app);
+}
+
+/* Background grid/noise overlay for a subtle "AI" vibe */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0) 0 0 / 24px 24px;
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+}
+
+/* ============================================================
+   FORM CONTROLS
+   ============================================================ */
+
+.input,
+.whs-input,
+select,
+textarea,
+input[type="text"],
+input[type="search"],
+input[type="number"],
+input[type="url"],
+input[type="password"],
+input[type="email"] {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+}
+
+textarea {
+  resize: vertical;
+}
+
+.input:focus,
+.whs-input:focus,
+select:focus,
+textarea:focus,
+input:focus {
+  border-color: rgba(139, 92, 246, 0.45);
+  box-shadow: var(--focus-ring);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.input[readonly],
+input[readonly] {
+  cursor: pointer;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field > label,
+.field label {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.help-text {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn.primary {
+  border-color: rgba(139, 92, 246, 0.45);
+  background: var(--ai-gradient-soft);
+}
+
+.btn.primary:hover {
+  box-shadow: var(--ai-glow);
+}
+
+.btn.secondary {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.btn.ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-secondary);
+}
+
+.btn.ghost:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.btn.danger {
+  border-color: rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn.small {
+  padding: 7px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+/* ============================================================
+   BADGE
+   ============================================================ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.badge.ok {
+  border-color: rgba(34, 197, 94, 0.35);
+  color: rgba(34, 197, 94, 1);
+}
+
+.badge.warn {
+  border-color: rgba(245, 158, 11, 0.35);
+  color: rgba(245, 158, 11, 1);
+}
+
+.badge.bad {
+  border-color: rgba(239, 68, 68, 0.35);
+  color: rgba(239, 68, 68, 1);
+}
+
+.badge.ai {
+  border-color: rgba(139, 92, 246, 0.35);
+  background: rgba(139, 92, 246, 0.10);
+  color: var(--ai-purple-2);
+}
+
+/* ============================================================
+   TABS
+   ============================================================ */
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.tab {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-weight: 600;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.tab:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+}
+
+.tab.active {
+  background: var(--ai-gradient-soft);
+  border-color: rgba(139, 92, 246, 0.35);
+  color: var(--text-primary);
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+/* ============================================================
+   STEPPER
+   ============================================================ */
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+  user-select: none;
+}
+
+.step .step-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.step.active,
+.step.done {
+  color: var(--text-secondary);
+}
+
+.step.active .step-dot {
+  border-color: rgba(139, 92, 246, 0.45);
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--ai-purple-2);
+  box-shadow: var(--focus-ring);
+}
+
+.step.done .step-dot {
+  border-color: rgba(34, 197, 94, 0.40);
+  background: rgba(34, 197, 94, 0.12);
+  color: rgba(34, 197, 94, 1);
+}
+
+.step-sep {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.10);
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+
+.toast {
+  background: rgba(16, 18, 48, 0.92);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.toast.toast-success {
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.toast.toast-error {
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.toast.toast-warning {
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.toast.toast-info {
+  border-color: rgba(59, 130, 246, 0.35);
+}
+
+/* ============================================================
+   SKELETON
+   ============================================================ */
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.10), transparent);
+  transform: translateX(-100%);
+  animation: skeletonShimmer 1.2s infinite;
+}
+
+@keyframes skeletonShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.skeleton-line {
+  height: 12px;
+  margin: 8px 0;
+}
+
+/* ============================================================
+   EMPTY / ERROR / PAYWALL STATES
+   ============================================================ */
+
+.state {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 18px;
+}
+
+.state-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.state-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  color: var(--ai-purple-2);
+  font-size: 18px;
+}
+
+.state-title {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.state-text {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-top: 6px;
+  line-height: 1.45;
+}
+
+.state-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.state-error .state-icon {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: rgba(239, 68, 68, 1);
+}
+
+.state-paywall .state-icon {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.25);
+  color: rgba(59, 130, 246, 1);
+}
+
+/* Utility */
+.muted { color: var(--text-muted); }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+
+/* ============================================================
+   COMMAND PALETTE POLISH
+   ============================================================ */
+
+.palette-content {
+  background: rgba(16, 18, 48, 0.78);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(10px);
+}
+
+.palette-overlay {
+  background: rgba(0, 0, 0, 0.58);
+}
+
+.palette-content input {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.command-item .command-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.command-item .command-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Badge variants (new naming, keeps backwards compatibility) */
+.badge--muted {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.badge--info {
+  background: rgba(59, 130, 246, 0.14);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  color: var(--text-primary);
+}
+
+.badge--success {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: var(--text-primary);
+}
+
+.badge--warning {
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.38);
+  color: var(--text-primary);
+}
+
+.badge--danger {
+  background: rgba(239, 68, 68, 0.14);
+  border: 1px solid rgba(239, 68, 68, 0.40);
+  color: var(--text-primary);
+}

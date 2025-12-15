@@ -1,0 +1,105 @@
+{
+  "manifest_version": 3,
+  "name": "WhatsApp Quantum CRM",
+  "version": "2.2.1",
+  "description": "CRM completo para WhatsApp Web - Workspace Unificado",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "scripting",
+    "downloads",
+    "contextMenus",
+    "notifications",
+    "alarms",
+    "unlimitedStorage"
+  ],
+  "host_permissions": [
+    "https://web.whatsapp.com/*",
+    "http://localhost:*/*",
+    "http://127.0.0.1:*/*",
+    "http://0.0.0.0:*/*",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://web.whatsapp.com/*"
+      ],
+      "js": [
+        "utils/event-bus.js",
+        "utils/module-registry.js",
+        "utils/selector-engine.js",
+        "utils/notification-center.js",
+        "utils/initialization-manager.js",
+        "subscription/subscription-manager.js",
+        "subscription/credits-manager.js",
+        "subscription/feature-gate.js",
+        "subscription/subscription-ui.js",
+        "overlays/overlay-manager.js",
+        "overlays/progress-overlay.js",
+        "overlays/quick-actions-injector.js",
+        "workspace/state-manager.js",
+        "content_main.js",
+        "metrics/message_metrics_collector.js",
+        "wweb_content.js",
+        "smart_replies_content.js",
+        "extractor/extractor_content.js",
+        "recovery_content.js",
+        "wpp_backup_tool.js"
+      ],
+      "css": [
+        "subscription/subscription.css",
+        "overlays/overlays.css",
+        "crm_panel.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/*",
+        "extractor/*",
+        "icons/*",
+        "inject.js",
+        "lib/*",
+        "overlays/*",
+        "panel.css",
+        "panel.html",
+        "panel.js",
+        "smart_replies/*",
+        "services/*",
+        "subscription/*",
+        "workspace/*",
+        "charts/*"
+      ],
+      "matches": [
+        "https://web.whatsapp.com/*",
+        "<all_urls>"
+      ]
+    }
+  ],
+  "options_page": "options.html",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "chrome_url_overrides": {}
+}

@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dashboard de Métricas - WhatsHybrid</title>
+    <style>
+      :root {
+        /* Paleta oficial (AI modern): Roxo / Azul / Preto */
+        --wh-purple: #8b5cf6;
+        --wh-blue: #3b82f6;
+        --wh-black: #020617;
+
+        /* Aliases (compatibilidade, sem cores antigas) */
+        --wh-green: var(--wh-purple);
+        --wh-dark: var(--wh-black);
+
+        --wh-bg: #020617;
+        --wh-surface: rgba(15, 23, 42, 0.92);
+        --wh-card: rgba(15, 23, 42, 0.92);
+        --wh-border: rgba(148, 163, 184, 0.22);
+        --wh-text: #e5e7eb;
+        --wh-muted: #94a3b8;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top left, #0f172a, #020617);
+        color: var(--wh-text);
+      }
+      header {
+        padding: 14px 20px 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--wh-border);
+        background: linear-gradient(135deg, #020617, #0b1120);
+      }
+      header .title-block h1 {
+        margin: 0;
+        font-size: 18px;
+        display:flex;
+        align-items:center;
+        gap:8px;
+      }
+      header .title-block h1 span.logo {
+        width:24px;
+        height:24px;
+        border-radius:999px;
+        background:#8b5cf6;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:13px;
+        font-weight:700;
+        color:#0b1020;
+      }
+      header .title-block p {
+        margin: 2px 0 0;
+        font-size: 12px;
+        color: var(--wh-muted);
+      }
+      header .right {
+        font-size: 11px;
+        color: var(--wh-muted);
+      }
+      main {
+        padding: 16px 18px 18px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 14px;
+        margin-bottom: 18px;
+      }
+      .card {
+        background: radial-gradient(circle at top left, #0b1120, #020617);
+        border-radius: 12px;
+        padding: 10px 12px;
+        border: 1px solid var(--wh-border);
+        box-shadow: 0 10px 25px rgba(15,23,42,0.6);
+        position: relative;
+        overflow: hidden;
+      }
+      .card::before {
+        content:"";
+        position:absolute;
+        inset:-40%;
+        background:radial-gradient(circle at top, rgba(34,197,94,0.18), transparent 60%);
+        opacity:0.7;
+      }
+      .card-inner {
+        position:relative;
+        z-index:1;
+      }
+      .card h2 {
+        margin: 0 0 4px;
+        font-size: 13px;
+        color: var(--wh-muted);
+        display:flex;
+        align-items:center;
+        gap:6px;
+      }
+      .card h2 span.icon {
+        font-size: 16px;
+      }
+      .card .value {
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 2px;
+      }
+      .card small {
+        color: var(--wh-muted);
+        font-size: 11px;
+      }
+      .label-pill {
+        display:inline-flex;
+        align-items:center;
+        gap:4px;
+        padding:2px 8px;
+        border-radius:999px;
+        background:rgba(15,118,110,0.15);
+        color:#a5f3fc;
+        font-size:10px;
+        text-transform:uppercase;
+        letter-spacing:0.06em;
+      }
+    
+      /* === WhatsHybrid Futuristic Visual Overlay v6 === */
+      body {
+        background:
+          radial-gradient(circle at top left, #1e293b 0, #020617 40%, #000000 100%);
+        color: #e5e7eb;
+      }
+      body, input, textarea, select, button {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      header {
+        border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+        box-shadow: 0 18px 35px rgba(15, 23, 42, 0.85);
+        background:
+          linear-gradient(120deg, rgba(15, 23, 42, 0.98), rgba(8, 47, 73, 0.98));
+      }
+      header h1, header h2 {
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      header .title-block p,
+      header p {
+        color: #94a3b8;
+      }
+
+      .card,
+      .wh-card,
+      .panel,
+      .tile {
+        background:
+          radial-gradient(circle at top left,
+            rgba(15, 23, 42, 0.98),
+            rgba(15, 23, 42, 0.92));
+        border-radius: 14px;
+        border: 1px solid rgba(148, 163, 184, 0.38);
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.85);
+        position: relative;
+        overflow: hidden;
+      }
+      .card::after,
+      .wh-card::after,
+      .panel::after {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        background: radial-gradient(circle at top,
+          rgba(56, 189, 248, 0.16),
+          transparent 60%);
+        opacity: 0;
+        transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+        transform: translate3d(-15%, -20%, 0);
+        pointer-events: none;
+      }
+      .card:hover::after,
+      .wh-card:hover::after,
+      .panel:hover::after {
+        opacity: 1;
+        transform: translate3d(-5%, -10%, 0);
+      }
+
+      button,
+      .btn,
+      input[type="submit"] {
+        border-radius: 999px;
+        border: 1px solid rgba(56, 189, 248, 0.55);
+        background-image: linear-gradient(135deg, #8b5cf6, #3b82f6, #1d4ed8);
+        color: #0b1120;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding-inline: 14px;
+        padding-block: 8px;
+        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.45);
+        cursor: pointer;
+        transition:
+          transform 0.16s ease-out,
+          box-shadow 0.16s ease-out,
+          filter 0.16s ease-out,
+          background-position 0.2s ease-out;
+        background-size: 180% 180%;
+        background-position: 0% 50%;
+      }
+      button:hover,
+      .btn:hover,
+      input[type="submit"]:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 18px 40px rgba(139, 92, 246, 0.55);
+        filter: saturate(1.1);
+        background-position: 100% 50%;
+      }
+      button:disabled,
+      .btn:disabled,
+      input[type="submit"]:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      .btn-secondary,
+      .btn-outline {
+        background-image: linear-gradient(135deg, #020617, #020617);
+        color: #e5e7eb;
+        border-color: rgba(148, 163, 184, 0.7);
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.7);
+      }
+
+      .tag-pill,
+      .status-pill,
+      .label-pill,
+      .pill {
+        border-radius: 999px;
+        border: 1px solid rgba(56, 189, 248, 0.5);
+        background:
+          radial-gradient(circle at top left,
+            rgba(139, 92, 246, 0.18),
+            rgba(59, 130, 246, 0.15));
+        color: #e0f2fe;
+        padding: 4px 10px;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      .section-title {
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 11px;
+        color: #a5b4fc;
+      }
+
+      /* Compact futuristic scrollbars */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(15, 23, 42, 0.85);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #8b5cf6, #3b82f6);
+        border-radius: 999px;
+      }
+
+      .input,
+      input[type="text"],
+      input[type="number"],
+      input[type="email"],
+      input[type="password"],
+      textarea,
+      select {
+        background: rgba(15, 23, 42, 0.92);
+        border-radius: 10px;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        color: #e5e7eb;
+        padding: 8px 10px;
+        outline: none;
+        transition:
+          border-color 0.16s ease-out,
+          box-shadow 0.16s ease-out,
+          background 0.16s ease-out;
+      }
+      .input::placeholder,
+      textarea::placeholder {
+        color: #64748b;
+      }
+      .input:focus,
+      input[type="text"]:focus,
+      input[type="number"]:focus,
+      input[type="email"]:focus,
+      input[type="password"]:focus,
+      textarea:focus,
+      select:focus {
+        border-color: rgba(56, 189, 248, 0.9);
+        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.8);
+        background: rgba(15, 23, 42, 0.98);
+      }
+
+      /* Charts grid (used in analytics.html; harmless elsewhere) */
+      .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 18px;
+      }
+      .chart-card {
+        padding: 14px 16px 12px;
+      }
+      .chart-card.full-width {
+        grid-column: 1 / -1;
+      }
+      .chart-card h2 {
+        margin: 0 0 8px;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: #e5e7eb;
+      }
+      .chart-caption {
+        margin-top: 8px;
+        font-size: 11px;
+        color: #94a3b8;
+      }
+      .chart-shell {
+        border-radius: 12px;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        background:
+          radial-gradient(circle at top,
+            rgba(15, 23, 42, 0.98),
+            rgba(15, 23, 42, 0.92));
+        padding: 6px 8px;
+      }
+      .chart-shell canvas {
+        width: 100%;
+        height: 230px;
+        display: block;
+        border-radius: 10px;
+      }
+
+    
+      header .title-block h1 span.logo img {
+        width: 22px;
+        height: 22px;
+        display: block;
+        border-radius: 999px;
+      }
+    
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="title-block">
+        <h1><span class="logo"><img src="icons/logo_quantum.png" alt="WA Hybrid CRM Quantum" /></span> Dashboard de Métricas</h1>
+        <p>Visão rápida do funil, tarefas e atividade dos últimos dias.</p>
+      </div>
+      <div class="right">
+        <span class="label-pill">online</span>
+      </div>
+    </header>
+
+    <main>
+      <div class="grid">
+        <div class="card">
+          <div class="card-inner">
+            <h2><span class="icon">📋</span> Negócios (deals)</h2>
+            <div id="m-deals" class="value">-</div>
+            <small>Total de leads/negócios cadastrados.</small>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-inner">
+            <h2><span class="icon">✅</span> Tarefas em aberto</h2>
+            <div id="m-tasks" class="value">-</div>
+            <small>Follow-ups e pendências não concluídas.</small>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-inner">
+            <h2><span class="icon">📣</span> Campanhas</h2>
+            <div id="m-campaigns" class="value">-</div>
+            <small>Total de campanhas registradas.</small>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-inner">
+            <h2><span class="icon">💬</span> Eventos (7 dias)</h2>
+            <div id="m-events7" class="value">-</div>
+            <small>Mensagens rastreadas nos últimos 7 dias.</small>
+          </div>
+        </div>
+      </div>
+    
+      <section class="charts-grid">
+        <div class="chart-card">
+          <h2>Funil por estágio</h2>
+          <div class="chart-shell">
+            <canvas id="chart-deals-stage" width="520" height="230"></canvas>
+          </div>
+          <p class="chart-caption">Distribuição dos negócios por estágio atual do funil.</p>
+        </div>
+
+        <div class="chart-card">
+          <h2>Tarefas por status</h2>
+          <div class="chart-shell">
+            <canvas id="chart-tasks-status" width="520" height="230"></canvas>
+          </div>
+          <p class="chart-caption">Visão rápida de tarefas abertas, concluídas e em andamento.</p>
+        </div>
+
+        <div class="chart-card full-width">
+          <h2>Eventos nos últimos 7 dias</h2>
+          <div class="chart-shell">
+            <canvas id="chart-events-7days" width="920" height="260"></canvas>
+          </div>
+          <p class="chart-caption">Volume diário de eventos/mensagens rastreadas no período recente.</p>
+        </div>
+      </section>
+
+    </main>
+
+    <script src="license_client.js"></script>
+    <script src="whatsHybrid.bridge.js"></script>
+    <script src="analytics.js"></script>
+  </body>
+</html>

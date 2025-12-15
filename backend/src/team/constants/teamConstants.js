@@ -1,0 +1,213 @@
+/**
+ * @fileoverview Constantes do módulo Team
+ * @module team/constants/teamConstants
+ */
+
+/**
+ * Roles de usuário no workspace
+ */
+const WORKSPACE_ROLE = Object.freeze({
+  OWNER: 'owner',
+  ADMIN: 'admin',
+  MANAGER: 'manager',
+  AGENT: 'agent',
+  VIEWER: 'viewer',
+});
+
+/**
+ * Permissões disponíveis
+ */
+const PERMISSION = Object.freeze({
+  // Workspace
+  WORKSPACE_MANAGE: 'workspace:manage',
+  WORKSPACE_VIEW: 'workspace:view',
+  WORKSPACE_DELETE: 'workspace:delete',
+  
+  // Team
+  TEAM_MANAGE: 'team:manage',
+  TEAM_VIEW: 'team:view',
+  TEAM_INVITE: 'team:invite',
+  
+  // Contacts
+  CONTACTS_CREATE: 'contacts:create',
+  CONTACTS_VIEW: 'contacts:view',
+  CONTACTS_EDIT: 'contacts:edit',
+  CONTACTS_DELETE: 'contacts:delete',
+  CONTACTS_EXPORT: 'contacts:export',
+  CONTACTS_IMPORT: 'contacts:import',
+  
+  // Deals
+  DEALS_CREATE: 'deals:create',
+  DEALS_VIEW: 'deals:view',
+  DEALS_EDIT: 'deals:edit',
+  DEALS_DELETE: 'deals:delete',
+  
+  // Pipelines
+  PIPELINES_MANAGE: 'pipelines:manage',
+  PIPELINES_VIEW: 'pipelines:view',
+  
+  // Channels
+  CHANNELS_MANAGE: 'channels:manage',
+  CHANNELS_VIEW: 'channels:view',
+  CHANNELS_CONNECT: 'channels:connect',
+  
+  // Messages
+  MESSAGES_SEND: 'messages:send',
+  MESSAGES_VIEW: 'messages:view',
+  MESSAGES_DELETE: 'messages:delete',
+  
+  // Flows
+  FLOWS_MANAGE: 'flows:manage',
+  FLOWS_VIEW: 'flows:view',
+  FLOWS_EXECUTE: 'flows:execute',
+  
+  // AI
+  AI_MANAGE: 'ai:manage',
+  AI_USE: 'ai:use',
+  
+  // Analytics
+  ANALYTICS_VIEW: 'analytics:view',
+  ANALYTICS_EXPORT: 'analytics:export',
+  
+  // Billing
+  BILLING_MANAGE: 'billing:manage',
+  BILLING_VIEW: 'billing:view',
+  
+  // Settings
+  SETTINGS_MANAGE: 'settings:manage',
+  SETTINGS_VIEW: 'settings:view',
+});
+
+/**
+ * Mapeamento de permissões por role
+ */
+const ROLE_PERMISSIONS = Object.freeze({
+  [WORKSPACE_ROLE.OWNER]: Object.values(PERMISSION),
+  
+  [WORKSPACE_ROLE.ADMIN]: [
+    PERMISSION.WORKSPACE_MANAGE,
+    PERMISSION.WORKSPACE_VIEW,
+    PERMISSION.TEAM_MANAGE,
+    PERMISSION.TEAM_VIEW,
+    PERMISSION.TEAM_INVITE,
+    PERMISSION.CONTACTS_CREATE,
+    PERMISSION.CONTACTS_VIEW,
+    PERMISSION.CONTACTS_EDIT,
+    PERMISSION.CONTACTS_DELETE,
+    PERMISSION.CONTACTS_EXPORT,
+    PERMISSION.CONTACTS_IMPORT,
+    PERMISSION.DEALS_CREATE,
+    PERMISSION.DEALS_VIEW,
+    PERMISSION.DEALS_EDIT,
+    PERMISSION.DEALS_DELETE,
+    PERMISSION.PIPELINES_MANAGE,
+    PERMISSION.PIPELINES_VIEW,
+    PERMISSION.CHANNELS_MANAGE,
+    PERMISSION.CHANNELS_VIEW,
+    PERMISSION.CHANNELS_CONNECT,
+    PERMISSION.MESSAGES_SEND,
+    PERMISSION.MESSAGES_VIEW,
+    PERMISSION.MESSAGES_DELETE,
+    PERMISSION.FLOWS_MANAGE,
+    PERMISSION.FLOWS_VIEW,
+    PERMISSION.FLOWS_EXECUTE,
+    PERMISSION.AI_MANAGE,
+    PERMISSION.AI_USE,
+    PERMISSION.ANALYTICS_VIEW,
+    PERMISSION.ANALYTICS_EXPORT,
+    PERMISSION.BILLING_VIEW,
+    PERMISSION.SETTINGS_MANAGE,
+    PERMISSION.SETTINGS_VIEW,
+  ],
+  
+  [WORKSPACE_ROLE.MANAGER]: [
+    PERMISSION.WORKSPACE_VIEW,
+    PERMISSION.TEAM_VIEW,
+    PERMISSION.TEAM_INVITE,
+    PERMISSION.CONTACTS_CREATE,
+    PERMISSION.CONTACTS_VIEW,
+    PERMISSION.CONTACTS_EDIT,
+    PERMISSION.CONTACTS_EXPORT,
+    PERMISSION.DEALS_CREATE,
+    PERMISSION.DEALS_VIEW,
+    PERMISSION.DEALS_EDIT,
+    PERMISSION.PIPELINES_VIEW,
+    PERMISSION.CHANNELS_VIEW,
+    PERMISSION.MESSAGES_SEND,
+    PERMISSION.MESSAGES_VIEW,
+    PERMISSION.FLOWS_VIEW,
+    PERMISSION.FLOWS_EXECUTE,
+    PERMISSION.AI_USE,
+    PERMISSION.ANALYTICS_VIEW,
+    PERMISSION.SETTINGS_VIEW,
+  ],
+  
+  [WORKSPACE_ROLE.AGENT]: [
+    PERMISSION.WORKSPACE_VIEW,
+    PERMISSION.CONTACTS_CREATE,
+    PERMISSION.CONTACTS_VIEW,
+    PERMISSION.CONTACTS_EDIT,
+    PERMISSION.DEALS_CREATE,
+    PERMISSION.DEALS_VIEW,
+    PERMISSION.DEALS_EDIT,
+    PERMISSION.PIPELINES_VIEW,
+    PERMISSION.CHANNELS_VIEW,
+    PERMISSION.MESSAGES_SEND,
+    PERMISSION.MESSAGES_VIEW,
+    PERMISSION.FLOWS_VIEW,
+    PERMISSION.AI_USE,
+  ],
+  
+  [WORKSPACE_ROLE.VIEWER]: [
+    PERMISSION.WORKSPACE_VIEW,
+    PERMISSION.CONTACTS_VIEW,
+    PERMISSION.DEALS_VIEW,
+    PERMISSION.PIPELINES_VIEW,
+    PERMISSION.CHANNELS_VIEW,
+    PERMISSION.MESSAGES_VIEW,
+    PERMISSION.FLOWS_VIEW,
+    PERMISSION.ANALYTICS_VIEW,
+  ],
+});
+
+/**
+ * Status de convite
+ */
+const INVITE_STATUS = Object.freeze({
+  PENDING: 'pending',
+  ACCEPTED: 'accepted',
+  EXPIRED: 'expired',
+  CANCELLED: 'cancelled',
+});
+
+/**
+ * Status de membro
+ */
+const MEMBER_STATUS = Object.freeze({
+  ACTIVE: 'active',
+  INACTIVE: 'inactive',
+  SUSPENDED: 'suspended',
+});
+
+/**
+ * Configurações de autenticação
+ */
+const AUTH_CONFIG = Object.freeze({
+  ACCESS_TOKEN_EXPIRY: '15m',
+  REFRESH_TOKEN_EXPIRY: '7d',
+  PASSWORD_MIN_LENGTH: 8,
+  PASSWORD_RESET_EXPIRY: 3600000, // 1 hora
+  EMAIL_VERIFY_EXPIRY: 86400000, // 24 horas
+  INVITE_EXPIRY: 604800000, // 7 dias
+  MAX_LOGIN_ATTEMPTS: 5,
+  LOCKOUT_DURATION: 900000, // 15 minutos
+});
+
+module.exports = {
+  WORKSPACE_ROLE,
+  PERMISSION,
+  ROLE_PERMISSIONS,
+  INVITE_STATUS,
+  MEMBER_STATUS,
+  AUTH_CONFIG,
+};

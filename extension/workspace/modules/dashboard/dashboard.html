@@ -1,0 +1,117 @@
+<!-- workspace/modules/dashboard/dashboard.html -->
+<div class="dashboard-module">
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">💬</div>
+            <div class="stat-info">
+                <span class="stat-value" id="stat-chats">0</span>
+                <span class="stat-label">Conversas Ativas</span>
+            </div>
+            <div class="stat-trend up">
+                <span>↑ 12%</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+                <span class="stat-value" id="stat-contacts">0</span>
+                <span class="stat-label">Contatos</span>
+            </div>
+            <div class="stat-trend up">
+                <span>↑ 5%</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">📨</div>
+            <div class="stat-info">
+                <span class="stat-value" id="stat-sent">0</span>
+                <span class="stat-label">Mensagens Enviadas</span>
+            </div>
+            <div class="stat-trend">
+                <span>Hoje</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">🧠</div>
+            <div class="stat-info">
+                <span class="stat-value" id="stat-automations">0</span>
+                <span class="stat-label">Sugestões IA</span>
+            </div>
+            <div class="stat-trend">
+                <span>Ativo</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="dashboard-grid">
+        <!-- Recent Chats -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3>Conversas Recentes</h3>
+                <button class="btn-link" onclick="Workspace.navigateTo('chats')">Ver todas</button>
+            </div>
+            <div class="card-body">
+                <div id="recent-chats" class="chat-list">
+                    <p class="empty-state">Carregando...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3>Ações Rápidas</h3>
+            </div>
+            <div class="card-body">
+                <div class="quick-actions-grid">
+                    <button class="quick-action" onclick="Workspace.navigateTo('bulk')">
+                        <span class="action-icon">📨</span>
+                        <span class="action-label">Nova Campanha</span>
+                    </button>
+                    <button class="quick-action" onclick="Workspace.navigateTo('smart-replies')">
+                        <span class="action-icon">🤖</span>
+                        <span class="action-label">Sugestões IA</span>
+                    </button>
+                    <button class="quick-action" onclick="Workspace.navigateTo('extractor')">
+                        <span class="action-icon">📥</span>
+                        <span class="action-label">Exportar Dados</span>
+                    </button>
+                    <button class="quick-action" onclick="DashboardModule.syncData()">
+                        <span class="action-icon">🔄</span>
+                        <span class="action-label">Sincronizar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Campaigns -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3>Campanhas Recentes</h3>
+                <button class="btn-link" onclick="Workspace.navigateTo('bulk')">Ver todas</button>
+            </div>
+            <div class="card-body">
+                <div id="recent-campaigns" class="campaigns-list">
+                    <p class="empty-state">Nenhuma campanha</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Feed -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h3>Atividade Recente</h3>
+            </div>
+            <div class="card-body">
+                <div id="activity-feed" class="activity-list">
+                    <p class="empty-state">Nenhuma atividade</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+/*
+  Base styles used by Workspace (panel.html) and modules.
+  This file was referenced in panel.html, but was missing.
+*/
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.input,
+.whs-input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(42, 57, 66, 0.6);
+  background: rgba(17, 27, 33, 0.4);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.input:focus,
+.whs-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(0, 168, 132, 0.2);
+}
+
+.whs-hint {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.whs-pill {
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+}
+
+.whs-strong {
+  font-weight: 700;
+}
+
+/* Small utility to make iframes integrate nicely */
+.whs-iframe {
+  width: 100%;
+  border: none;
+  border-radius: var(--radius-lg);
+  background: var(--bg-secondary);
+}

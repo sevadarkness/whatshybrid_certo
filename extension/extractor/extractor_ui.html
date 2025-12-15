@@ -1,0 +1,199 @@
+<!-- extractor/extractor_ui.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extrator WhatsApp</title>
+    <link rel="stylesheet" href="extractor_ui.css">
+</head>
+<body>
+    <div id="extractor-panel" class="extractor-panel">
+        <!-- Header -->
+        <div class="extractor-header">
+            <div class="header-title">
+                <span class="icon">📊</span>
+                <h2>Extrator de Dados</h2>
+            </div>
+            <button id="btn-close" class="btn-icon" title="Fechar">✕</button>
+        </div>
+
+        <!-- Status Bar -->
+        <div id="status-bar" class="status-bar">
+            <span class="status-icon">⏳</span>
+            <span class="status-text">Aguardando...</span>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="extract">Extrair</button>
+            <button class="tab" data-tab="deleted">Apagadas</button>
+            <button class="tab" data-tab="edited">Editadas</button>
+            <button class="tab" data-tab="history">Histórico</button>
+        </div>
+
+        <!-- Tab Content: Extract -->
+        <div id="tab-extract" class="tab-content active">
+            <!-- Quick Actions -->
+            <div class="section">
+                <h3>Extração Rápida</h3>
+                <div class="button-grid">
+                    <button id="btn-extract-all" class="btn primary large">
+                        <span class="btn-icon">🚀</span>
+                        <span class="btn-text">Extrair Tudo</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Individual Extractions -->
+            <div class="section">
+                <h3>Extração Individual</h3>
+                <div class="button-grid">
+                    <button id="btn-extract-contacts" class="btn secondary">
+                        <span class="btn-icon">👥</span>
+                        <span class="btn-text">Contatos</span>
+                    </button>
+                    <button id="btn-extract-chats" class="btn secondary">
+                        <span class="btn-icon">💬</span>
+                        <span class="btn-text">Chats</span>
+                    </button>
+                    <button id="btn-extract-groups" class="btn secondary">
+                        <span class="btn-icon">👨‍👩‍👧‍👦</span>
+                        <span class="btn-text">Grupos</span>
+                    </button>
+                    <button id="btn-extract-labels" class="btn secondary">
+                        <span class="btn-icon">🏷️</span>
+                        <span class="btn-text">Rótulos</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Options -->
+            <div class="section">
+                <h3>Opções de Extração</h3>
+                <div class="options-list">
+                    <label class="option">
+                        <input type="checkbox" id="opt-include-messages">
+                        <span>Incluir mensagens dos chats</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" id="opt-include-deleted" checked>
+                        <span>Incluir mensagens apagadas detectadas</span>
+                    </label>
+                    <label class="option">
+                        <input type="checkbox" id="opt-include-edited" checked>
+                        <span>Incluir mensagens editadas detectadas</span>
+                    </label>
+                    <div class="option-group">
+                        <label>Limite de mensagens por chat:</label>
+                        <input type="number" id="opt-message-limit" value="50" min="1" max="500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Format -->
+            <div class="section">
+                <h3>Formato de Exportação</h3>
+                <div class="format-selector">
+                    <label class="format-option">
+                        <input type="radio" name="export-format" value="xlsx" checked>
+                        <span class="format-label">
+                            <span class="format-icon">📗</span>
+                            <span>Excel (.xlsx)</span>
+                        </span>
+                    </label>
+                    <label class="format-option">
+                        <input type="radio" name="export-format" value="csv">
+                        <span class="format-label">
+                            <span class="format-icon">📄</span>
+                            <span>CSV</span>
+                        </span>
+                    </label>
+                    <label class="format-option">
+                        <input type="radio" name="export-format" value="json">
+                        <span class="format-label">
+                            <span class="format-icon">📋</span>
+                            <span>JSON</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Deleted Messages -->
+        <div id="tab-deleted" class="tab-content">
+            <div class="section">
+                <div class="section-header">
+                    <h3>Mensagens Apagadas Detectadas</h3>
+                    <button id="btn-refresh-deleted" class="btn-small">🔄 Atualizar</button>
+                </div>
+                <div id="deleted-count" class="count-badge">0 mensagens</div>
+                <div id="deleted-list" class="message-list">
+                    <p class="empty-state">Nenhuma mensagem apagada detectada ainda.</p>
+                </div>
+                <button id="btn-export-deleted" class="btn secondary full-width">
+                    📥 Exportar Mensagens Apagadas
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab Content: Edited Messages -->
+        <div id="tab-edited" class="tab-content">
+            <div class="section">
+                <div class="section-header">
+                    <h3>Mensagens Editadas Detectadas</h3>
+                    <button id="btn-refresh-edited" class="btn-small">🔄 Atualizar</button>
+                </div>
+                <div id="edited-count" class="count-badge">0 mensagens</div>
+                <div id="edited-list" class="message-list">
+                    <p class="empty-state">Nenhuma mensagem editada detectada ainda.</p>
+                </div>
+                <button id="btn-export-edited" class="btn secondary full-width">
+                    📥 Exportar Mensagens Editadas
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab Content: History -->
+        <div id="tab-history" class="tab-content">
+            <div class="section">
+                <h3>Histórico de Extrações</h3>
+                <div id="history-list" class="history-list">
+                    <p class="empty-state">Nenhuma extração realizada ainda.</p>
+                </div>
+                <button id="btn-clear-history" class="btn danger full-width">
+                    🗑️ Limpar Histórico
+                </button>
+            </div>
+        </div>
+
+        <!-- Progress Overlay -->
+        <div id="progress-overlay" class="progress-overlay hidden">
+            <div class="progress-content">
+                <div class="spinner"></div>
+                <p id="progress-text">Extraindo dados...</p>
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+                <p id="progress-detail" class="progress-detail"></p>
+            </div>
+        </div>
+
+        <!-- Results Preview -->
+        <div id="results-preview" class="results-preview hidden">
+            <div class="preview-header">
+                <h3>Prévia dos Dados</h3>
+                <button id="btn-close-preview" class="btn-icon">✕</button>
+            </div>
+            <div id="preview-content" class="preview-content"></div>
+            <div class="preview-actions">
+                <button id="btn-download-preview" class="btn primary">📥 Download</button>
+                <button id="btn-cancel-preview" class="btn secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="export_utils.js"></script>
+    <script src="extractor_ui.js"></script>
+</body>
+</html>

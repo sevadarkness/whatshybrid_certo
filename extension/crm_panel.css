@@ -1,0 +1,615 @@
+/* Painel lateral CRM */
+#whatsHybrid-crm-panel {
+  position: fixed;
+  top: 60px;
+  right: 8px;
+  width: 280px;
+  max-height: calc(100vh - 80px);
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(12px);
+  color: #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 16px 45px rgba(15, 23, 42, 0.7);
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  overflow: hidden;
+}
+
+#whatsHybrid-crm-panel-header {
+  padding: 8px 10px;
+  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#whatsHybrid-crm-panel-header span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#whatsHybrid-crm-panel-header span::before {
+  content: "WH";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(139, 92, 246, 0.9);
+  font-size: 11px;
+  font-weight: 700;
+  color: #0b1020;
+}
+
+#whatsHybrid-crm-panel-body {
+  padding: 8px 10px 6px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+#whatsHybrid-crm-panel-body::-webkit-scrollbar {
+  width: 4px;
+}
+#whatsHybrid-crm-panel-body::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 999px;
+}
+
+#whatsHybrid-crm-panel-footer {
+  padding: 6px 10px 8px;
+  border-top: 1px solid rgba(148, 163, 184, 0.4);
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+#whatsHybrid-crm-panel-footer button {
+  flex: 1;
+  border-radius: 999px;
+  border: none;
+  padding: 6px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+#whatsHybrid-crm-open {
+  background: #1d4ed8;
+  color: #e0e7ff;
+}
+#whatsHybrid-crm-save {
+  background: #8b5cf6;
+  color: #0b1020;
+}
+
+#whatsHybrid-crm-panel-body label {
+  display: block;
+  margin-top: 6px;
+  margin-bottom: 2px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+}
+
+#whatsHybrid-crm-panel-body input,
+#whatsHybrid-crm-panel-body textarea,
+#whatsHybrid-crm-panel-body select {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px solid rgba(55, 65, 81, 0.9);
+  background: rgba(15, 23, 42, 0.9);
+  color: #e5e7eb;
+  padding: 5px 7px;
+  font-size: 12px;
+}
+
+#whatsHybrid-crm-panel-body input:focus,
+#whatsHybrid-crm-panel-body textarea:focus,
+#whatsHybrid-crm-panel-body select:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.55);
+}
+
+#whatsHybrid-crm-contact-name {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* Tags */
+#whatsHybrid-crm-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.whatsHybrid-tag-chip {
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  background: #4b5563;
+  color: #f9fafb;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.whatsHybrid-tag-chip.selected {
+  border-color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.18);
+  color: #ddd6fe;
+}
+
+/* License block (plano + tokens) */
+.whatsHybrid-license-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.whatsHybrid-license-row input {
+  min-width: 0;
+}
+
+.whatsHybrid-license-validate {
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  color: #0b1020;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 10px 28px rgba(59, 130, 246, 0.25);
+}
+
+.whatsHybrid-license-validate:hover {
+  filter: brightness(1.05);
+}
+
+.whatsHybrid-license-kpis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.whatsHybrid-license-kpi {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 10px;
+  padding: 5px 7px;
+  font-size: 11px;
+}
+
+.whatsHybrid-license-kpi .k {
+  color: rgba(226, 232, 240, 0.72);
+}
+
+.whatsHybrid-license-kpi .v {
+  color: #e5e7eb;
+  font-weight: 800;
+}
+
+/* AI floating button */
+#whatsHybrid-ai-button {
+  /* Trigger legado removido (substituído pela varinha mágica ao lado do “+”) */
+  display: none !important;
+  pointer-events: none !important;
+}
+
+/* Magic wand (AI optional) — ao lado do botão “+” */
+#whatsHybrid-ai-wand {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(139, 92, 246, 0.55);
+  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  color: #0b1020;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 0 6px;
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.35);
+  transition: transform 120ms ease, filter 120ms ease, box-shadow 120ms ease;
+}
+
+#whatsHybrid-ai-wand:hover {
+  transform: translateY(-1px);
+  filter: saturate(1.1);
+  box-shadow: 0 14px 34px rgba(139, 92, 246, 0.38);
+}
+
+#whatsHybrid-ai-wand:active {
+  transform: translateY(0);
+}
+
+#whatsHybrid-ai-wand[aria-disabled="true"] {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* Quick replies popup */
+#whatsHybrid-quick-replies {
+  position: fixed;
+  bottom: 72px;
+  right: 24px;
+  width: 260px;
+  max-height: 280px;
+  background: #0b1120;
+  border-radius: 12px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+  z-index: 999999;
+  display: none;
+  color: #e5e7eb;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+#whatsHybrid-quick-replies header {
+  padding: 7px 9px;
+  background: linear-gradient(135deg, #0f172a, #020617);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+#whatsHybrid-quick-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 6px 8px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+#whatsHybrid-quick-list::-webkit-scrollbar {
+  width: 4px;
+}
+#whatsHybrid-quick-list::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 999px;
+}
+
+#whatsHybrid-quick-list li {
+  padding: 6px 7px;
+  border-radius: 8px;
+  font-size: 11px;
+  cursor: pointer;
+  margin-bottom: 4px;
+  background: #020617;
+  border: 1px solid #1f2937;
+}
+#whatsHybrid-quick-list li:hover {
+  background: #111827;
+}
+
+/* Highlights & message actions */
+.whatsHybrid-highlight {
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.55);
+  border-radius: 8px;
+}
+
+.whatsHybrid-msg-actions {
+  position: absolute;
+  top: -10px;
+  right: 4px;
+  display: flex;
+  gap: 4px;
+  z-index: 10;
+}
+
+.whatsHybrid-msg-actions button {
+  border-radius: 999px;
+  border: none;
+  padding: 2px 6px;
+  font-size: 10px;
+  cursor: pointer;
+  background: rgba(15, 23, 42, 0.92);
+  color: #e5e7eb;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.8);
+}
+.whatsHybrid-msg-actions button:hover {
+  background: #1d4ed8;
+  color: #e0e7ff;
+}
+
+/* Insights panel (already referenced in v3/v4) */
+#whatsHybrid-insights-panel {
+  position: fixed;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 380px;
+  max-width: calc(100vw - 40px);
+  background: #020617;
+  border-radius: 14px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.95);
+  z-index: 100000;
+  display: none;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+#whatsHybrid-insights-panel header {
+  padding: 8px 10px;
+  background: linear-gradient(135deg, #0f172a, #020617);
+  color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+#whatsHybrid-insights-panel .body {
+  padding: 10px;
+  font-size: 12px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+#whatsHybrid-insights-panel .pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  margin-bottom: 4px;
+}
+#whatsHybrid-insights-panel .pill.positive { background:#166534; color:#bbf7d0; }
+#whatsHybrid-insights-panel .pill.neutral { background:#1f2937; color:#e5e7eb; }
+#whatsHybrid-insights-panel .pill.negative { background:#7f1d1d; color:#fecaca; }
+
+
+#whatsHybrid-license-block {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(75, 85, 99, 0.7);
+}
+
+#whatsHybrid-license-block input {
+  font-size: 11px;
+}
+
+#whatsHybrid-license-block small {
+  font-size: 10px;
+}
+
+/* ========== CRM: Painel e badges de estágio adicionais ========== */
+
+/* Badge de estágio inline */
+.crm-stage-badge-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Indicador de estágio na sidebar */
+.crm-stage-sidebar-indicator {
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
+
+/* Painel de informações do contato */
+.crm-contact-info-panel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 320px;
+  background: white;
+  box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.crm-contact-info-panel.open {
+  transform: translateX(0);
+}
+
+.crm-contact-info-header {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.crm-contact-info-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.crm-contact-info-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.crm-contact-info-section {
+  margin-bottom: 20px;
+}
+
+.crm-contact-info-section h4 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.crm-stage-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.crm-stage-option {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.crm-stage-option:hover {
+  transform: scale(1.05);
+}
+
+.crm-stage-option.selected {
+  border-color: currentColor;
+  font-weight: 600;
+}
+
+/* Notas */
+.crm-notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.crm-note-item {
+  background: #f9fafb;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.crm-note-item-date {
+  font-size: 10px;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+.crm-add-note-btn {
+  width: 100%;
+  padding: 8px;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.crm-add-note-btn:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+/* Ações rápidas */
+.crm-quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.crm-quick-action {
+  padding: 12px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.crm-quick-action:hover {
+  background: #f9fafb;
+  border-color: #3b82f6;
+}
+
+.crm-quick-action-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.crm-quick-action-label {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+/* Timeline de atividades */
+.crm-activity-timeline {
+  position: relative;
+  padding-left: 20px;
+}
+
+.crm-activity-timeline::before {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #e5e7eb;
+}
+
+.crm-activity-item {
+  position: relative;
+  padding-bottom: 16px;
+}
+
+.crm-activity-item::before {
+  content: '';
+  position: absolute;
+  left: -17px;
+  top: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #3b82f6;
+  border: 2px solid white;
+}
+
+.crm-activity-item.type-stage_change::before {
+  background: #f59e0b;
+}
+
+.crm-activity-item.type-note::before {
+  background: #10b981;
+}
+
+.crm-activity-item.type-message::before {
+  background: #6b7280;
+}
+
+.crm-activity-content {
+  font-size: 13px;
+}
+
+.crm-activity-time {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 2px;
+}

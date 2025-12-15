@@ -1,0 +1,29 @@
+<!-- workspace/modules/contacts/contacts.html -->
+<div class="whs-module whs-contacts" data-module="contacts">
+  <div class="whs-module-header">
+    <div>
+      <h2>Contatos & CRM</h2>
+      <div class="whs-module-subtitle" id="whs-contacts-subtitle">Gerencie contatos locais e deals do backend</div>
+    </div>
+    <div class="whs-actions">
+      <select class="whs-input" id="whs-contacts-source" title="Fonte">
+        <option value="backend">Backend (Deals)</option>
+        <option value="local">Local (CRM no WhatsApp)</option>
+      </select>
+      <input type="search" class="whs-input" id="whs-contacts-search" placeholder="Buscar por nome/telefone..." />
+      <button class="btn secondary" id="whs-contacts-refresh">Atualizar</button>
+      <button class="btn primary" id="whs-contacts-new">Novo</button>
+    </div>
+  </div>
+
+  <div class="whs-contacts-layout">
+    <aside class="whs-contacts-sidebar">
+      <div class="whs-contacts-status" id="whs-contacts-status"></div>
+      <div class="whs-contacts-list" id="whs-contacts-list"></div>
+    </aside>
+
+    <section class="whs-contacts-details" id="whs-contacts-details">
+      <div class="whs-empty">Selecione um contato para ver detalhes.</div>
+    </section>
+  </div>
+</div>

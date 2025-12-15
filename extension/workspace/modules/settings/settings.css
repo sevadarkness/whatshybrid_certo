@@ -1,0 +1,49 @@
+/* workspace/modules/settings/settings.css */
+
+.whs-module {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.whs-module-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.whs-module-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.whs-module-subtitle {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.whs-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.whs-embed {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.whs-iframe {
+  width: 100%;
+  height: 78vh;
+  min-height: 650px;
+  border: 0;
+  display: block;
+}

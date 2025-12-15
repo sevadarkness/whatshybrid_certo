@@ -1,0 +1,46 @@
+<!-- workspace/modules/help/help.html -->
+<div class="whs-module whs-help" data-module="help">
+  <div class="whs-module-header">
+    <div>
+      <h2>Ajuda & Diagnóstico</h2>
+      <div class="whs-module-subtitle">Setup rápido, status e logs da extensão</div>
+    </div>
+    <div class="whs-actions">
+      <button class="btn secondary" id="whs-help-open-wa">Abrir WhatsApp Web</button>
+      <button class="btn secondary" id="whs-help-open-kanban">Abrir Kanban</button>
+      <button class="btn secondary" id="whs-help-open-options">Configurações</button>
+      <button class="btn primary" id="whs-help-refresh">Recarregar status</button>
+    </div>
+  </div>
+
+  <div class="whs-help-grid">
+    <section class="whs-card">
+      <h3>Status rápido</h3>
+      <div id="whs-help-status" class="whs-status"></div>
+    </section>
+
+    <section class="whs-card">
+      <h3>Checklist</h3>
+      <ul class="whs-checklist">
+        <li><strong>Configurar</strong> <code>backendUrl</code> e <code>extensionKey</code> (Configurações).</li>
+        <li><strong>Abrir</strong> o WhatsApp Web e fazer login.</li>
+        <li><strong>Conectar</strong> no Workspace (Dashboard/Conversas/Labels).</li>
+        <li><strong>Testar</strong> um Flow: criar gatilho <code>message_contains</code> e ação <code>move_stage</code>.</li>
+        <li><strong>Verificar</strong> métricas no módulo Analytics.</li>
+      </ul>
+      <div class="whs-hint">Dica: o backend precisa estar acessível pelo navegador (CORS liberado). Use <code>/health</code> para teste.</div>
+    </section>
+
+    <section class="whs-card whs-full">
+      <div class="whs-card-header">
+        <h3>Logs (extension_errors)</h3>
+        <div class="whs-actions">
+          <button class="btn secondary" id="whs-help-download">Baixar JSON</button>
+          <button class="btn danger" id="whs-help-clear">Limpar</button>
+        </div>
+      </div>
+      <div class="whs-hint">Erros coletados automaticamente pela extensão. Útil para depuração.</div>
+      <div id="whs-help-logs" class="whs-logs"></div>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,154 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Deal {
+  id         String        @id @default(cuid())
+  externalId String        @unique
+  name       String?
+  phone      String?
+  stage      String?
+  notes      String?
+  tags       DealTag[]
+  tasks      Task[]
+  events     MessageEvent[]
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+model Tag {
+  id        String    @id @default(cuid())
+  name      String
+  color     String
+  deals     DealTag[]
+}
+
+model DealTag {
+  dealId String
+  tagId  String
+  deal   Deal   @relation(fields: [dealId], references: [id])
+  tag    Tag    @relation(fields: [tagId], references: [id])
+
+  @@id([dealId, tagId])
+}
+
+model Campaign {
+  id             String           @id @default(cuid())
+  message        String
+  // SQLite não suportava tipo Json em algumas versões do Prisma.
+  // Armazenamos JSON como string serializada (text) para compatibilidade local.
+  media          String?
+  messages       String?
+  scheduleAt     DateTime?
+  status         String
+  intervalSeconds Int?
+  batchSize       Int?
+  senderProfile   String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  items          CampaignItem[]
+}
+
+model CampaignItem {
+  id          String    @id @default(cuid())
+  phone       String
+  status      String
+  error       String?
+  sentAt      DateTime?
+  retries     Int      @default(0)
+  lastAttemptAt DateTime?
+  campaign    Campaign  @relation(fields: [campaignId], references: [id])
+  campaignId  String
+}
+
+model Flow {
+  id        String   @id @default(cuid())
+  name      String
+  active    Boolean  @default(true)
+  // Salvar configurações como JSON serializado em texto para compatibilidade SQLite
+  config    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MessageEvent {
+  id            String   @id @default(cuid())
+  deal          Deal?    @relation(fields: [dealId], references: [id])
+  dealId        String?
+  type          String
+  chatExternalId String?
+  contactName   String?
+  // Payload serializado (JSON string)
+  payload       String?
+  createdAt     DateTime @default(now())
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  role      String   @default("agent")
+  tasks     Task[]   @relation("TaskAssignee")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  status      String   @default("OPEN")
+  dueAt       DateTime?
+  deal        Deal?    @relation(fields: [dealId], references: [id])
+  dealId      String?
+  assignee    User?    @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  assigneeId  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model LicenseKey {
+  id            String   @id @default(cuid())
+  key           String   @unique
+  userEmail     String
+  status        String   @default("ACTIVE") // ACTIVE, REVOKED
+  plan          String   @default("empreendedor_mensal")
+  trial         Boolean  @default(false)
+  trialEndsAt   DateTime?
+  boundClientId String?
+  activatedAt   DateTime?
+  aiEnabled     Boolean  @default(false)
+  aiCredits     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// Armazena configurações da aplicação (ex: chave OpenAI)
+// OBS: para armazenar segredos com segurança, use APP_ENCRYPTION_KEY no backend.
+model AppSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Códigos de recarga de créditos de IA (para vender "créditos" sem expor sua chave OpenAI)
+model TopupCode {
+  id            String     @id @default(cuid())
+  code          String     @unique
+  credits       Int
+  status        String     @default("ACTIVE") // ACTIVE, REDEEMED, EXPIRED, CANCELED
+  expiresAt     DateTime?
+  redeemedAt    DateTime?
+  // Mantemos apenas a chave do licenciado que resgatou (string), sem relação automática
+  redeemedByKey String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}

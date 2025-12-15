@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Time & Tarefas - WhatsHybrid</title>
+    <style>
+      :root {
+        /* Paleta oficial (AI modern): Roxo / Azul / Preto */
+        --wh-purple: #8b5cf6;
+        --wh-blue: #3b82f6;
+        --wh-black: #020617;
+
+        /* Aliases (compatibilidade, sem cores antigas) */
+        --wh-green: var(--wh-purple);
+        --wh-dark: var(--wh-black);
+        --wh-bg: #0b1020;
+        --wh-surface: rgba(15, 23, 42, 0.92);
+        --wh-border: rgba(148, 163, 184, 0.35);
+        --wh-text: #e5e7eb;
+        --wh-muted: #94a3b8;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 16px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top left, rgba(139, 92, 246, 0.12), rgba(2, 6, 23, 1));
+        color: var(--wh-text);
+      }
+      h1 {
+        margin: 0 0 4px;
+        font-size: 18px;
+      }
+      .subtitle {
+        margin: 0 0 14px;
+        font-size: 12px;
+        color: var(--wh-muted);
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+        gap: 16px;
+      }
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+      .card {
+        background: var(--wh-surface);
+        border-radius: 10px;
+        padding: 12px;
+        box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
+        border: 1px solid rgba(148, 163, 184, 0.4);
+      }
+      .card h2 {
+        margin: 0 0 6px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .card h3 {
+        margin: 10px 0 4px;
+        font-size: 13px;
+      }
+      .card h2 span.icon {
+        font-size: 16px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        font-size: 12px;
+      }
+      th, td {
+        padding: 6px 8px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      th {
+        text-align: left;
+        background:#f3f4f6;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #6b7280;
+      }
+      tbody tr:nth-child(even) {
+        background: #f9fafb;
+      }
+      tbody tr:hover {
+        background: #f1f5f9;
+      }
+      label {
+        display:block;
+        font-size:12px;
+        margin-top:4px;
+        font-weight:600;
+      }
+      input, select {
+        width: 100%;
+        box-sizing:border-box;
+        padding: 4px 6px;
+        border-radius: 8px;
+        border:1px solid #d1d5db;
+        margin-top: 2px;
+        font-size: 12px;
+        background:#f9fafb;
+      }
+      input:focus, select:focus {
+        outline:none;
+        border-color: var(--wh-green);
+        background:#ffffff;
+        box-shadow:0 0 0 1px rgba(37,211,102,.35);
+      }
+      button {
+        margin-top: 8px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+        background: var(--wh-green);
+        color: #fff;
+        font-weight: 600;
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      button.secondary {
+        background:#1d4ed8;
+      }
+      small {
+        font-size: 11px;
+        color: var(--wh-muted);
+      }
+    
+      /* === WhatsHybrid Futuristic Visual Overlay v6 === */
+      body {
+        background:
+          radial-gradient(circle at top left, #1e293b 0, #020617 40%, #000000 100%);
+        color: #e5e7eb;
+      }
+      body, input, textarea, select, button {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      header {
+        border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+        box-shadow: 0 18px 35px rgba(15, 23, 42, 0.85);
+        background:
+          linear-gradient(120deg, rgba(15, 23, 42, 0.98), rgba(8, 47, 73, 0.98));
+      }
+      header h1, header h2 {
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      header .title-block p,
+      header p {
+        color: #94a3b8;
+      }
+
+      .card,
+      .wh-card,
+      .panel,
+      .tile {
+        background:
+          radial-gradient(circle at top left,
+            rgba(15, 23, 42, 0.98),
+            rgba(15, 23, 42, 0.92));
+        border-radius: 14px;
+        border: 1px solid rgba(148, 163, 184, 0.38);
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.85);
+        position: relative;
+        overflow: hidden;
+      }
+      .card::after,
+      .wh-card::after,
+      .panel::after {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        background: radial-gradient(circle at top,
+          rgba(56, 189, 248, 0.16),
+          transparent 60%);
+        opacity: 0;
+        transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+        transform: translate3d(-15%, -20%, 0);
+        pointer-events: none;
+      }
+      .card:hover::after,
+      .wh-card:hover::after,
+      .panel:hover::after {
+        opacity: 1;
+        transform: translate3d(-5%, -10%, 0);
+      }
+
+      button,
+      .btn,
+      input[type="submit"] {
+        border-radius: 999px;
+        border: 1px solid rgba(56, 189, 248, 0.55);
+        background-image: linear-gradient(135deg, #8b5cf6, #3b82f6, #1d4ed8);
+        color: #0b1120;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding-inline: 14px;
+        padding-block: 8px;
+        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.45);
+        cursor: pointer;
+        transition:
+          transform 0.16s ease-out,
+          box-shadow 0.16s ease-out,
+          filter 0.16s ease-out,
+          background-position 0.2s ease-out;
+        background-size: 180% 180%;
+        background-position: 0% 50%;
+      }
+      button:hover,
+      .btn:hover,
+      input[type="submit"]:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 18px 40px rgba(139, 92, 246, 0.55);
+        filter: saturate(1.1);
+        background-position: 100% 50%;
+      }
+      button:disabled,
+      .btn:disabled,
+      input[type="submit"]:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      .btn-secondary,
+      .btn-outline {
+        background-image: linear-gradient(135deg, #020617, #020617);
+        color: #e5e7eb;
+        border-color: rgba(148, 163, 184, 0.7);
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.7);
+      }
+
+      .tag-pill,
+      .status-pill,
+      .label-pill,
+      .pill {
+        border-radius: 999px;
+        border: 1px solid rgba(56, 189, 248, 0.5);
+        background:
+          radial-gradient(circle at top left,
+            rgba(34, 197, 94, 0.18),
+            rgba(56, 189, 248, 0.15));
+        color: #e0f2fe;
+        padding: 4px 10px;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      .section-title {
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        font-size: 11px;
+        color: #a5b4fc;
+      }
+
+      /* Compact futuristic scrollbars */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(15, 23, 42, 0.85);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #8b5cf6, #3b82f6);
+        border-radius: 999px;
+      }
+
+      .input,
+      input[type="text"],
+      input[type="number"],
+      input[type="email"],
+      input[type="password"],
+      textarea,
+      select {
+        background: rgba(15, 23, 42, 0.92);
+        border-radius: 10px;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        color: #e5e7eb;
+        padding: 8px 10px;
+        outline: none;
+        transition:
+          border-color 0.16s ease-out,
+          box-shadow 0.16s ease-out,
+          background 0.16s ease-out;
+      }
+      .input::placeholder,
+      textarea::placeholder {
+        color: #64748b;
+      }
+      .input:focus,
+      input[type="text"]:focus,
+      input[type="number"]:focus,
+      input[type="email"]:focus,
+      input[type="password"]:focus,
+      textarea:focus,
+      select:focus {
+        border-color: rgba(56, 189, 248, 0.9);
+        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.8);
+        background: rgba(15, 23, 42, 0.98);
+      }
+
+      /* Charts grid (used in analytics.html; harmless elsewhere) */
+      .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 18px;
+      }
+      .chart-card {
+        padding: 14px 16px 12px;
+      }
+      .chart-card.full-width {
+        grid-column: 1 / -1;
+      }
+      .chart-card h2 {
+        margin: 0 0 8px;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: #e5e7eb;
+      }
+      .chart-caption {
+        margin-top: 8px;
+        font-size: 11px;
+        color: #94a3b8;
+      }
+      .chart-shell {
+        border-radius: 12px;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        background:
+          radial-gradient(circle at top,
+            rgba(15, 23, 42, 0.98),
+            rgba(15, 23, 42, 0.92));
+        padding: 6px 8px;
+      }
+      .chart-shell canvas {
+        width: 100%;
+        height: 230px;
+        display: block;
+        border-radius: 10px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <h1>Time & Tarefas</h1>
+    <p class="subtitle">Gerencie sua equipe e distribua follow-ups entre responsáveis.</p>
+
+    <div class="layout">
+      <div class="card">
+        <h2><span class="icon">👥</span> Usuários</h2>
+        <table id="usersTable">
+          <thead>
+            <tr><th>Nome</th><th>Email</th><th>Função</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <h3>Novo usuário</h3>
+        <div>
+          <label>Nome<input id="userName"/></label>
+          <label>Email<input id="userEmail"/></label>
+          <label>Função
+            <select id="userRole">
+              <option value="agent">Atendente</option>
+              <option value="admin">Admin</option>
+            </select>
+          </label>
+          <button id="createUser">➕ Criar usuário</button>
+          <small>Crie usuários para controlar donos de tarefas e relatórios.</small>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="icon">✅</span> Tarefas</h2>
+        <table id="tasksTable">
+          <thead>
+            <tr><th>Título</th><th>Contato</th><th>Responsável</th><th>Vencimento</th><th>Status</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <h3>Nova tarefa</h3>
+        <div>
+          <label>Título<input id="taskTitle"/></label>
+          <label>ID do negócio (Deal ID)<input id="taskDealId"/></label>
+          <label>Responsável (User ID)<input id="taskUserId"/></label>
+          <label>Data de vencimento (ISO)<input id="taskDueAt"/></label>
+          <button id="createTask">📝 Criar tarefa</button>
+          <small>Use o ID do negócio (deal) e do usuário para vincular a tarefa corretamente.</small>
+        </div>
+      </div>
+    </div>
+
+    <script src="license_client.js"></script>
+    <script src="whatsHybrid.bridge.js"></script>
+    <script src="team.js"></script>
+  </body>
+</html>

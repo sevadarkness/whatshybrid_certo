@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Configurações - WhatsHybrid v4</title>
+    <link rel="stylesheet" href="assets/shared-components.css" />
+    <style>
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        padding: 24px;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: var(--bg-app, #050508);
+        color: var(--text-primary, #ffffff);
+        line-height: 1.45;
+      }
+
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 16px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+      }
+
+      .header-block {
+        min-width: 0;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 18px;
+        letter-spacing: 0.02em;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      h1 span.badge {
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: rgba(139, 92, 246, 0.12);
+        color: #c4b5fd;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .subtitle {
+        font-size: 12px;
+        color: var(--text-muted, rgba(255, 255, 255, 0.62));
+        margin: 8px 0 0;
+        max-width: 72ch;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 16px;
+      }
+
+      .grid-two {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 16px;
+        align-items: start;
+      }
+
+      @media (max-width: 920px) {
+        body { padding: 18px; }
+        .grid { grid-template-columns: 1fr; }
+        .grid-two { grid-template-columns: 1fr; }
+      }
+
+      section {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+        border-radius: var(--radius-xl, 22px);
+        padding: 16px;
+        box-shadow: var(--shadow-sm, 0 6px 18px rgba(0, 0, 0, 0.25));
+        min-width: 0;
+      }
+
+      section h2 {
+        margin: 0 0 10px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      section h2 .icon {
+        font-size: 16px;
+        line-height: 1;
+      }
+
+      .section-note {
+        display: block;
+        margin: -4px 0 10px;
+        font-size: 12px;
+        color: var(--text-muted, rgba(255, 255, 255, 0.62));
+        line-height: 1.35;
+      }
+
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--text-secondary, rgba(255, 255, 255, 0.78));
+        font-weight: 600;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        display: block;
+        border-radius: var(--radius-lg, 16px);
+        border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text-primary, #ffffff);
+        padding: 10px 12px;
+        font: inherit;
+        font-size: 13px;
+        line-height: 1.35;
+        outline: none;
+        transition: border-color 120ms ease, box-shadow 120ms ease, background 120ms ease;
+      }
+
+      input::placeholder,
+      textarea::placeholder {
+        color: var(--text-muted-2, rgba(255, 255, 255, 0.46));
+      }
+
+      textarea {
+        min-height: 96px;
+        resize: vertical;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        border-color: rgba(139, 92, 246, 0.55);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      input[type="file"] {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+
+      .license-inline {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-top: 10px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-secondary, rgba(255, 255, 255, 0.78));
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      .pill span {
+        color: var(--text-primary, #ffffff);
+        font-weight: 700;
+      }
+
+      .row-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-top: 10px;
+      }
+
+      .divider {
+        height: 1px;
+        background: var(--border-color, rgba(255, 255, 255, 0.12));
+        margin: 12px 0;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+        border-radius: var(--radius-lg, 16px);
+        padding: 12px;
+        min-width: 0;
+      }
+
+      .card-title {
+        font-weight: 700;
+        font-size: 12px;
+        color: var(--text-primary, #ffffff);
+        margin-bottom: 8px;
+      }
+
+      .muted-note {
+        color: var(--text-muted, rgba(255, 255, 255, 0.62));
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      details.advanced {
+        margin-top: 12px;
+        border-radius: var(--radius-lg, 16px);
+        border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+        background: rgba(255, 255, 255, 0.02);
+        padding: 10px 12px;
+      }
+
+      details.advanced > summary {
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--text-primary, #ffffff);
+        outline: none;
+        list-style: none;
+      }
+
+      details.advanced > summary::-webkit-details-marker {
+        display: none;
+      }
+
+      details.advanced[open] {
+        box-shadow: var(--shadow-sm, 0 6px 18px rgba(0, 0, 0, 0.25));
+      }
+
+      .footer-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 16px;
+      }
+
+      #save {
+        min-width: 220px;
+      }
+
+      /* Knowledge list */
+      .knowledge-list {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 10px;
+        max-height: 360px;
+        overflow: auto;
+        padding-right: 2px;
+      }
+
+      .knowledge-item {
+        padding: 10px;
+        border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+        border-radius: var(--radius-lg, 16px);
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .knowledge-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: baseline;
+      }
+
+      .knowledge-title {
+        font-weight: 700;
+        font-size: 12px;
+        color: var(--text-primary, #ffffff);
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .knowledge-meta {
+        color: var(--text-muted, rgba(255, 255, 255, 0.62));
+        font-size: 11px;
+        white-space: nowrap;
+      }
+
+      .knowledge-snippet {
+        margin-top: 6px;
+        color: var(--text-secondary, rgba(255, 255, 255, 0.78));
+        font-size: 12px;
+        line-height: 1.35;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+      }
+
+      .knowledge-actions {
+        margin-top: 10px;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      #aiTrainingSection {
+        grid-column: 1 / -1;
+      }
+
+      @media (max-width: 920px) {
+        #aiTrainingSection { grid-column: auto; }
+        .footer-actions { justify-content: stretch; }
+        #save { width: 100%; min-width: 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="header-block">
+          <h1>Configurações do WhatsHybrid <span class="badge">v4</span></h1>
+          <p class="subtitle">
+            Funil, tags, IA e respostas rápidas para combinar com a sua operação.
+          </p>
+        </div>
+      </header>
+
+      <div class="grid">
+        <section>
+          <h2><span class="icon">🔑</span> Plano & Tokens</h2>
+          <small class="section-note">Sincronizado com o painel sobreposto ao WhatsApp. Use sua chave .</small>
+
+          <label>
+            Chave de acesso
+            <input id="licenseKeyInput" placeholder="XXXX-XXXX-XXXX" />
+          </label>
+
+          <div class="license-inline">
+            <button id="licenseValidate" type="button" class="btn primary">Validar / Ativar</button>
+            <span class="pill">Status: <span id="planStatusText">Inativo</span></span>
+            <span class="pill">Tokens IA: <span id="tokensText">—</span></span>
+          </div>
+
+          <small id="licenseStatusText" class="section-note" style="margin-top: 8px;">Carregando…</small>
+        </section>
+
+        <section id="backendAuthSection">
+          <h2><span class="icon">🌐</span> Backend & Autenticação</h2>
+          <small class="section-note">Backend Node/Express responsável por IA, CRM, campanhas, automações, etc.</small>
+
+          <label>
+            URL do backend (API base)
+            <input id="backendUrl" placeholder="https://seu-dominio.com/api" />
+          </label>
+
+          <label>
+            Chave de autenticação da extensão
+            <input id="extensionKey" placeholder="token usado pela API para autenticar a extensão" />
+          </label>
+        </section>
+
+        <section>
+          <h2><span class="icon">🎯</span> CRM & Funil</h2>
+
+          <label>
+            Estágios padrão do funil (um por linha)
+            <textarea id="pipelineStages" rows="4">Novo
+Em contato
+Em negociação
+Fechado
+Perdido</textarea>
+          </label>
+
+          <label>
+            Tags padrão (formato: nome:#cor por linha)
+            <textarea id="defaultTags" rows="4">VIP:#8b5cf6
+Atrasado:#1d4ed8
+Quente:#3b82f6</textarea>
+          </label>
+        </section>
+
+        <section>
+          <h2><span class="icon">🤖</span> IA</h2>
+
+          <label>
+            Habilitar IA para respostas sugeridas
+            <select id="aiEnabled">
+              <option value="true">Sim</option>
+              <option value="false">Não</option>
+            </select>
+          </label>
+
+          <label>
+            Modo da IA (tom)
+            <select id="aiTone">
+              <option value="profissional">Profissional</option>
+              <option value="informal">Informal</option>
+              <option value="convincente">Convincente / Vendas</option>
+              <option value="suporte">Suporte / Calmo</option>
+            </select>
+          </label>
+
+          <label>
+            Habilitar insights de conversa (sentimento / resumo)
+            <select id="insightsEnabled">
+              <option value="true">Sim</option>
+              <option value="false">Não</option>
+            </select>
+          </label>
+
+          <label>
+            Seu nome ou assinatura curta
+            <input id="userNameInput" placeholder="Ex.: João da Quantum" />
+          </label>
+
+          <small class="section-note">
+
+          </small>
+        </section>
+
+        <section id="aiTrainingSection">
+          <h2><span class="icon">🧙‍♂️</span> Treinar minha IA</h2>
+          <small class="section-note">
+            Ensine sua IA sobre seu negócio (preço, prazos, regras, FAQ, políticas). A IA usa esse conhecimento + o contexto do chat para sugerir respostas melhores.
+          </small>
+
+          <div class="grid-two">
+            <div>
+              <label>
+                Título (opcional)
+                <input id="aiTrainTitle" placeholder="Ex.: Tabela de preços / Política de garantia / FAQ" />
+              </label>
+
+              <label>
+                Conteúdo (texto)
+                <textarea id="aiTrainText" rows="6" placeholder="Cole aqui regras, preços, FAQ, processos..."></textarea>
+              </label>
+
+              <div class="row-actions">
+                <button id="aiTrainAddText" type="button" class="btn primary">Adicionar ao conhecimento</button>
+                <button id="aiTrainImportSystem" type="button" class="btn ghost" title="Importar dados já cadastrados (funil/tags/atalhos)">
+                  Importar do sistema
+                </button>
+              </div>
+
+              <div class="divider"></div>
+
+              <label>
+                Enviar arquivo (TXT/MD/CSV/JSON/YAML)
+                <input id="aiTrainFile" type="file" />
+              </label>
+
+              <div class="row-actions">
+                <button id="aiTrainUploadFile" type="button" class="btn secondary">Importar arquivo</button>
+                <small class="muted-note">Para PDF/DOCX, cole o conteúdo em texto por enquanto.</small>
+              </div>
+
+              <div class="divider"></div>
+
+              <label>
+                Áudio (opcional)
+                <input id="aiTrainAudioFile" type="file" accept="audio/*" />
+              </label>
+
+              <div class="row-actions">
+                <button id="aiTrainUploadAudio" type="button" class="btn secondary">Transcrever e treinar</button>
+                <button id="aiTrainRecordBtn" type="button" class="btn ghost" title="Gravar áudio pelo microfone">Gravar áudio</button>
+              </div>
+
+              <div id="aiTrainRecordStatus" class="muted-note" style="margin-top: 6px;"></div>
+            </div>
+
+            <div>
+              <div class="card">
+                <div class="card-title">Sugestões da IA</div>
+                <div class="row-actions">
+                  <button id="aiTrainGenerateSuggestions" type="button" class="btn primary">Gerar sugestões</button>
+                  <button id="aiTrainApplySuggestions" type="button" class="btn secondary">Aplicar sugestões</button>
+                </div>
+                <small class="muted-note">As sugestões ficam separadas das regras oficiais até você aplicar.</small>
+              </div>
+
+              <div class="card" style="margin-top: 12px;">
+                <div class="card-title">Conhecimento salvo</div>
+                <div id="aiTrainState" class="muted-note">Carregando…</div>
+                <div id="aiKnowledgeList" class="knowledge-list"></div>
+              </div>
+            </div>
+          </div>
+
+          <details class="advanced" style="margin-top: 12px;">
+            <summary>Regras oficiais (avançado)</summary>
+            <small class="section-note">Opcional: edite regras oficiais do seu negócio (recomendado apenas para o dono/gestor).</small>
+            <textarea id="aiPolicyEditor" rows="10" placeholder="Regras oficiais do negócio..."></textarea>
+            <div class="row-actions">
+              <button id="aiPolicySaveBtn" type="button" class="btn secondary">Salvar regras</button>
+              <button id="aiPolicyReloadBtn" type="button" class="btn ghost">Recarregar</button>
+            </div>
+          </details>
+        </section>
+
+        <section>
+          <h2><span class="icon">⚡</span> Respostas rápidas</h2>
+          <small class="section-note">Use variáveis como {{nome}}, {{telefone}}, {{vendedor}} dentro das respostas.</small>
+
+          <label>
+            Respostas rápidas (formato: atalho => mensagem)
+            <textarea id="quickReplies" rows="8">/boasvindas => Olá {{nome}}, tudo bem? Obrigado por chamar a {{empresa}}!
+/orcamento => Poderia me informar por favor qual cidade e qual serviço você precisa, para eu poder montar seu orçamento? 
+/followup => Oi {{nome}}, passando só para dar um lembrete sobre nossa última conversa. Posso te ajudar com algo?</textarea>
+          </label>
+        </section>
+      </div>
+
+      <div class="row-actions footer-actions">
+        <button id="save" class="btn primary">Salvar configurações</button>
+      </div>
+    </div>
+
+    <script src="license_client.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>
