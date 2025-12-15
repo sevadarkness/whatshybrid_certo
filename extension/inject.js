@@ -89,6 +89,289 @@
         return { Events, MessageTypes, WAState, MessageAck };
     })();
 
+    // ============================================
+    // DOM-BASED UTILITIES (2024-2025 WhatsApp Web)
+    // ============================================
+    
+    // Timing constants for DOM operations
+    const WHATSAPP_UI_UPDATE_DELAY = 150;  // Time for WhatsApp UI to process input
+    const MESSAGE_SEND_CONFIRMATION_DELAY = 100;  // Time to ensure message is sent
+    const SEARCH_RESULTS_WAIT_TIME = 1000;  // Time to wait for search results to load
+    const CHAT_LOAD_DELAY = 500;  // Time to wait for chat to load after clicking
+    
+    /**
+     * Send message via DOM manipulation (fallback when Store is unavailable)
+     */
+    async function sendMessageViaDOM(text) {
+        console.log('[Inject][DOM] Attempting to send message via DOM, length:', text?.length);
+        
+        try {
+            // 1. Find message box with multiple fallback selectors
+            const messageBox = document.querySelector('[contenteditable="true"][data-tab="10"]') ||
+                             document.querySelector('[contenteditable="true"][data-tab="6"]') ||
+                             document.querySelector('footer [contenteditable="true"]') ||
+                             document.querySelector('div[role="textbox"][contenteditable="true"]') ||
+                             document.querySelector('[data-testid="conversation-compose-box-input"]');
+            
+            if (!messageBox) {
+                console.error('[Inject][DOM] Message box not found');
+                throw new Error('Campo de mensagem não encontrado');
+            }
+            
+            console.log('[Inject][DOM] Message box found');
+            
+            // 2. Focus and clear
+            messageBox.focus();
+            
+            // Clear existing content (using modern Selection API when possible)
+            if (window.getSelection && document.createRange) {
+                try {
+                    const range = document.createRange();
+                    range.selectNodeContents(messageBox);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    messageBox.textContent = '';
+                } catch (e) {
+                    // Fallback to deprecated execCommand for compatibility
+                    document.execCommand('selectAll', false, null);
+                    document.execCommand('delete', false, null);
+                }
+            } else {
+                // Legacy browsers fallback
+                document.execCommand('selectAll', false, null);
+                document.execCommand('delete', false, null);
+            }
+            
+            // 3. Insert text
+            messageBox.textContent = text;
+            
+            // 4. Dispatch input event (required for WhatsApp to recognize the text)
+            const inputEvent = new InputEvent('input', { 
+                bubbles: true, 
+                data: text,
+                inputType: 'insertText'
+            });
+            messageBox.dispatchEvent(inputEvent);
+            
+            // Also dispatch change event for compatibility
+            messageBox.dispatchEvent(new Event('change', { bubbles: true }));
+            
+            console.log('[Inject][DOM] Text inserted and events dispatched');
+            
+            // 5. Wait for WhatsApp to process the input and enable send button
+            await new Promise(r => setTimeout(r, WHATSAPP_UI_UPDATE_DELAY));
+            
+            // 6. Find and click send button with multiple fallback selectors
+            const sendButton = document.querySelector('[data-testid="send"]') ||
+                             document.querySelector('button[aria-label*="Enviar"]') ||
+                             document.querySelector('button[aria-label*="Send"]') ||
+                             (() => {
+                                 const icon = document.querySelector('span[data-icon="send"]');
+                                 return icon?.closest('button');
+                             })() ||
+                             document.querySelector('footer button[data-tab="11"]');
+            
+            if (!sendButton) {
+                console.error('[Inject][DOM] Send button not found');
+                throw new Error('Botão de enviar não encontrado');
+            }
+            
+            console.log('[Inject][DOM] Send button found, clicking...');
+            sendButton.click();
+            
+            // Wait to ensure message is sent
+            await new Promise(r => setTimeout(r, MESSAGE_SEND_CONFIRMATION_DELAY));
+            
+            console.log('[Inject][DOM] Message sent successfully via DOM');
+            return { success: true, method: 'DOM' };
+            
+        } catch (error) {
+            console.error('[Inject][DOM] Error sending message via DOM:', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Get last messages from DOM (fallback when Store is unavailable)
+     */
+    function getLastMessagesFromDOM(limit = 10) {
+        console.log('[Inject][DOM] Reading last messages from DOM, limit:', limit);
+        
+        try {
+            const messages = [];
+            
+            // Multiple selectors for message containers (WhatsApp Web 2024-2025)
+            const messageContainers = document.querySelectorAll(
+                'div[data-id], div[data-message-id], div.message-in, div.message-out, div[role="row"]'
+            );
+            
+            console.log('[Inject][DOM] Found', messageContainers.length, 'message containers');
+            
+            // Get recent containers
+            const recentContainers = Array.from(messageContainers).slice(-limit);
+            
+            recentContainers.forEach((container, index) => {
+                try {
+                    // Find text element with multiple selectors
+                    const textElement = container.querySelector('span.selectable-text') ||
+                                      container.querySelector('div.copyable-text') ||
+                                      container.querySelector('span[dir="ltr"]') ||
+                                      container.querySelector('span[dir="auto"]');
+                    
+                    if (textElement) {
+                        const text = (textElement.innerText || textElement.textContent || '').trim();
+                        if (text) {
+                            // Determine if message is from me
+                            const isFromMe = container.classList.contains('message-out') ||
+                                           container.closest('.message-out') !== null ||
+                                           container.querySelector('[data-icon="tail-out"]') !== null;
+                            
+                            messages.push({
+                                text: text,
+                                isFromMe: isFromMe,
+                                timestamp: Date.now(),
+                                index: index
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.warn('[Inject][DOM] Error processing message container:', e);
+                }
+            });
+            
+            console.log('[Inject][DOM] Extracted', messages.length, 'messages from DOM');
+            return messages;
+            
+        } catch (error) {
+            console.error('[Inject][DOM] Error reading messages from DOM:', error);
+            return [];
+        }
+    }
+    
+    /**
+     * Get current chat information from DOM
+     */
+    function getCurrentChatFromDOM() {
+        console.log('[Inject][DOM] Getting current chat from DOM');
+        
+        try {
+            // Try multiple selectors for header title
+            const headerTitle = document.querySelector('[data-testid="conversation-info-header-chat-title"]') ||
+                              document.querySelector('header span[dir="auto"][title]') ||
+                              document.querySelector('#main header span[title]') ||
+                              document.querySelector('header[data-testid="conversation-header"] span[title]');
+            
+            const name = headerTitle?.getAttribute('title') || 
+                        headerTitle?.textContent || 
+                        null;
+            
+            // Check if it's a group
+            const isGroup = !!document.querySelector('[data-testid="group-info-header"]') ||
+                           !!document.querySelector('header [data-icon="default-group"]');
+            
+            const result = {
+                name: name,
+                element: headerTitle,
+                isGroup: isGroup,
+                method: 'DOM'
+            };
+            
+            console.log('[Inject][DOM] Current chat:', result);
+            return result;
+            
+        } catch (error) {
+            console.error('[Inject][DOM] Error getting current chat from DOM:', error);
+            return { name: null, element: null, isGroup: false, method: 'DOM' };
+        }
+    }
+    
+    /**
+     * Open chat by name via DOM
+     */
+    async function openChatByName(name) {
+        console.log('[Inject][DOM] Opening chat by name:', name);
+        
+        try {
+            // Find chat items in the list
+            const chatItems = document.querySelectorAll(
+                '[data-testid="cell-frame-container"], [data-testid="list-item-content"], div[role="listitem"]'
+            );
+            
+            console.log('[Inject][DOM] Found', chatItems.length, 'chat items');
+            
+            for (const item of chatItems) {
+                const titleElement = item.querySelector('span[title]') || 
+                                   item.querySelector('span[dir="auto"]');
+                const title = titleElement?.getAttribute('title') || 
+                            titleElement?.textContent;
+                
+                if (title && title.toLowerCase().includes(name.toLowerCase())) {
+                    console.log('[Inject][DOM] Found matching chat:', title);
+                    item.click();
+                    await new Promise(r => setTimeout(r, CHAT_LOAD_DELAY));
+                    return { success: true, name: title, method: 'DOM' };
+                }
+            }
+            
+            console.warn('[Inject][DOM] Chat not found:', name);
+            throw new Error(`Chat "${name}" não encontrado`);
+            
+        } catch (error) {
+            console.error('[Inject][DOM] Error opening chat by name:', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Search and open chat via search field
+     */
+    async function searchAndOpenChat(query) {
+        console.log('[Inject][DOM] Searching and opening chat:', query);
+        
+        try {
+            // 1. Find search box with multiple selectors
+            const searchBox = document.querySelector('[data-testid="chat-list-search"]') ||
+                            document.querySelector('[contenteditable="true"][data-tab="3"]') ||
+                            document.querySelector('div[role="textbox"][data-tab="3"]') ||
+                            document.querySelector('[data-testid="search-input"]');
+            
+            if (!searchBox) {
+                console.error('[Inject][DOM] Search box not found');
+                throw new Error('Campo de busca não encontrado');
+            }
+            
+            console.log('[Inject][DOM] Search box found');
+            
+            // 2. Focus and type
+            searchBox.focus();
+            searchBox.textContent = query;
+            searchBox.dispatchEvent(new InputEvent('input', { bubbles: true }));
+            
+            // 3. Wait for search results
+            await new Promise(r => setTimeout(r, SEARCH_RESULTS_WAIT_TIME));
+            
+            // 4. Click first result
+            const firstResult = document.querySelector('[data-testid="cell-frame-container"]') ||
+                              document.querySelector('[data-testid="list-item-content"]') ||
+                              document.querySelector('div[role="listitem"]');
+            
+            if (firstResult) {
+                console.log('[Inject][DOM] Clicking first search result');
+                firstResult.click();
+                await new Promise(r => setTimeout(r, CHAT_LOAD_DELAY));
+                return { success: true, method: 'DOM' };
+            }
+            
+            console.warn('[Inject][DOM] No search results found');
+            throw new Error('Nenhum resultado encontrado');
+            
+        } catch (error) {
+            console.error('[Inject][DOM] Error searching and opening chat:', error);
+            throw error;
+        }
+    }
+
     // Enhanced WhatsApp Web integration
     class WhatsAppWebIntegration {
         constructor() {
@@ -108,8 +391,13 @@
 
         waitForWhatsAppWeb() {
             const checkInterval = setInterval(() => {
-                if (window.Store || window.require) {
+                // Check for Store/require (preferred) or DOM elements (fallback)
+                const hasStore = window.Store || window.require;
+                const hasDOM = document.querySelector('#app') || document.querySelector('#pane-side');
+                
+                if (hasStore || hasDOM) {
                     clearInterval(checkInterval);
+                    console.log('[Inject] WhatsApp Web detected, initializing...', hasStore ? 'Store available' : 'DOM-only mode');
                     this.initializeIntegration();
                 }
             }, 1000);
@@ -118,35 +406,62 @@
             setTimeout(() => {
                 clearInterval(checkInterval);
                 if (!this.isInitialized) {
-                    console.warn('WhatsApp Web not detected after 30 seconds');
-                    this.sendToExtension('integration_failed', { error: 'WhatsApp Web not detected' });
+                    console.warn('[Inject] WhatsApp Web not detected after 30 seconds, trying to initialize anyway...');
+                    // Try to initialize anyway - DOM methods might still work
+                    try {
+                        this.initializeIntegration();
+                    } catch (e) {
+                        console.error('[Inject] Failed to initialize:', e);
+                        this.sendToExtension('integration_failed', { error: 'WhatsApp Web not detected' });
+                    }
                 }
             }, 30000);
         }
 
         initializeIntegration() {
             try {
-                this.initStore();
+                // Try to init Store (may fail if not available)
+                try {
+                    this.initStore();
+                    console.log('[Inject] Store initialized successfully');
+                } catch (e) {
+                    console.warn('[Inject] Store initialization failed, will use DOM-only mode:', e.message);
+                    this.Store = null;
+                }
+                
+                // Always init utils (has DOM fallbacks)
                 this.initUtils();
-                this.setupEventListeners();
+                
+                // Try to setup event listeners (may fail if Store not available)
+                try {
+                    this.setupEventListeners();
+                } catch (e) {
+                    console.warn('[Inject] Event listeners setup failed:', e.message);
+                }
+                
                 this.isInitialized = true;
                 
                 this.sendToExtension('integration_ready', {
                     timestamp: Date.now(),
                     userAgent: navigator.userAgent,
-                    version: this.getWhatsAppVersion()
+                    version: this.getWhatsAppVersion(),
+                    hasStore: !!this.Store,
+                    mode: this.Store ? 'hybrid' : 'dom-only'
                 });
                 
                 // Notificar flows_runtime que inject está pronto
                 window.postMessage({
                     source: 'QUANTUM_INJECT',
                     type: 'INJECT_READY',
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
+                    hasStore: !!this.Store,
+                    mode: this.Store ? 'hybrid' : 'dom-only'
                 }, '*');
 
-                console.log('WhatsApp Web.js Manager integration initialized');
+                console.log('[Inject] WhatsApp Web.js Manager integration initialized in', 
+                           this.Store ? 'hybrid mode (Store + DOM)' : 'DOM-only mode');
             } catch (error) {
-                console.error('Failed to initialize WhatsApp Web integration:', error);
+                console.error('[Inject] Failed to initialize WhatsApp Web integration:', error);
                 this.sendToExtension('integration_failed', { error: error.message });
             }
         }
@@ -278,43 +593,49 @@
             this.Utils = {
                 // Message utilities
                 sendMessage: async (chat, content, options = {}) => {
+                    console.log('[Inject] Attempting to send message, length:', content?.length);
+                    
+                    // Try Store-based methods first
                     try {
-                        if (!this.Store || !this.Store.SendMessage) {
-                            throw new Error('SendMessage not available');
-                        }
-                        
-                        // IMPORTANTE:
-                        // `this.getChat(...)` neste arquivo é um *handler de comando* (que envia dados
-                        // para a extensão) e não retorna o model do chat. Para obter o model correto,
-                        // precisamos usar o util `this.Utils.getChat(...)`.
-                        const chatModel = await this.Utils.getChat(chat);
-                        if (!chatModel) {
-                            throw new Error('Chat not found');
-                        }
+                        if (this.Store && this.Store.SendMessage) {
+                            console.log('[Inject] Using Store-based send method');
+                            
+                            // IMPORTANTE:
+                            // `this.getChat(...)` neste arquivo é um *handler de comando* (que envia dados
+                            // para a extensão) e não retorna o model do chat. Para obter o model correto,
+                            // precisamos usar o util `this.Utils.getChat(...)`.
+                            const chatModel = await this.Utils.getChat(chat);
+                            if (!chatModel) {
+                                throw new Error('Chat not found');
+                            }
 
-                        // Handle different message types
-                        if (options.media) {
-                            return await this.sendMediaMessage(chatModel, content, options);
-                        } else if (options.location) {
-                            return await this.sendLocationMessage(chatModel, options.location);
-                        } else if (options.contactCard) {
-                            return await this.sendContactMessage(chatModel, options.contactCard);
-                        } else {
-                            // Fallback chain for sending text messages
-                            if (this.Store.SendMessage?.sendTextMsgToChat) {
-                                return await this.Store.SendMessage.sendTextMsgToChat(chatModel, content, options);
-                            } else if (this.Store.SendMessage?.sendMsgToChat) {
-                                return await this.Store.SendMessage.sendMsgToChat(chatModel, content, options);
-                            } else if (chatModel.sendMessage) {
-                                return await chatModel.sendMessage(content, options);
+                            // Handle different message types
+                            if (options.media) {
+                                return await this.sendMediaMessage(chatModel, content, options);
+                            } else if (options.location) {
+                                return await this.sendLocationMessage(chatModel, options.location);
+                            } else if (options.contactCard) {
+                                return await this.sendContactMessage(chatModel, options.contactCard);
                             } else {
-                                throw new Error('No send message method available');
+                                // Fallback chain for sending text messages
+                                if (this.Store.SendMessage?.sendTextMsgToChat) {
+                                    return await this.Store.SendMessage.sendTextMsgToChat(chatModel, content, options);
+                                } else if (this.Store.SendMessage?.sendMsgToChat) {
+                                    return await this.Store.SendMessage.sendMsgToChat(chatModel, content, options);
+                                } else if (chatModel.sendMessage) {
+                                    return await chatModel.sendMessage(content, options);
+                                } else {
+                                    throw new Error('No send message method available');
+                                }
                             }
                         }
                     } catch (error) {
-                        console.error('Error sending message:', error);
-                        throw error;
+                        console.warn('[Inject] Store-based send failed, trying DOM fallback:', error.message);
                     }
+                    
+                    // Fallback to DOM-based sending
+                    console.log('[Inject] Using DOM-based send method');
+                    return await sendMessageViaDOM(content);
                 },
 
                 // Chat utilities
@@ -885,41 +1206,60 @@ function setupStoreEventListeners() {
  * Handlers de ações vindas do runtime (FlowsRuntime)
  */
 async function handleSendMessageFromRuntime(data, respond) {
+  console.log('[Inject] handleSendMessageFromRuntime called, content length:', data.content?.length);
+  
+  // Try Store-based methods first
   try {
-    const chat = await window.Store.Chat.find(data.chatId);
-    if (!chat) {
-      respond({ success: false, error: 'Chat não encontrado' });
+    if (window.Store && window.Store.Chat) {
+      const chat = await window.Store.Chat.find(data.chatId);
+      if (!chat) {
+        throw new Error('Chat não encontrado via Store');
+      }
+      
+      const options = {};
+      
+      if (data.options && data.options.quotedMessageId) {
+        const quotedMsg = await window.Store.Msg.find(data.options.quotedMessageId);
+        if (quotedMsg) {
+          options.quotedMsg = quotedMsg;
+        }
+      }
+      
+      if (data.options && data.options.mentionedIds && data.options.mentionedIds.length) {
+        options.mentionedJidList = data.options.mentionedIds;
+      }
+      
+      // Fallback chain for sending text messages
+      let result;
+      if (window.Store.SendMessage?.sendTextMsgToChat) {
+        result = await window.Store.SendMessage.sendTextMsgToChat(chat, data.content, options);
+      } else if (window.Store.SendMessage?.sendMsgToChat) {
+        result = await window.Store.SendMessage.sendMsgToChat(chat, data.content, options);
+      } else if (chat.sendMessage) {
+        result = await chat.sendMessage(data.content, options);
+      } else {
+        throw new Error('No send message method available');
+      }
+      
+      respond({ 
+        success: true, 
+        messageId: result?.id?._serialized,
+        method: 'Store'
+      });
       return;
     }
-    
-    const options = {};
-    
-    if (data.options && data.options.quotedMessageId) {
-      const quotedMsg = await window.Store.Msg.find(data.options.quotedMessageId);
-      if (quotedMsg) {
-        options.quotedMsg = quotedMsg;
-      }
-    }
-    
-    if (data.options && data.options.mentionedIds && data.options.mentionedIds.length) {
-      options.mentionedJidList = data.options.mentionedIds;
-    }
-    
-    // Fallback chain for sending text messages
-    let result;
-    if (window.Store.SendMessage?.sendTextMsgToChat) {
-      result = await window.Store.SendMessage.sendTextMsgToChat(chat, data.content, options);
-    } else if (window.Store.SendMessage?.sendMsgToChat) {
-      result = await window.Store.SendMessage.sendMsgToChat(chat, data.content, options);
-    } else if (chat.sendMessage) {
-      result = await chat.sendMessage(data.content, options);
-    } else {
-      throw new Error('No send message method available');
-    }
-    
+  } catch (e) {
+    console.warn('[Inject] Store-based runtime send failed, trying DOM fallback:', e.message);
+  }
+  
+  // Fallback to DOM-based sending
+  try {
+    console.log('[Inject] Using DOM fallback for runtime send');
+    const result = await sendMessageViaDOM(data.content);
     respond({ 
       success: true, 
-      messageId: result?.id?._serialized,
+      messageId: null,
+      method: 'DOM'
     });
   } catch (e) {
     console.error('[Inject] Erro ao enviar mensagem (runtime):', e);
