@@ -509,7 +509,7 @@ const Workspace = (function() {
         );
 
         // Buscar em dados via Bridge (se conectado)
-        if (window.WhatsHybridBridge?.isConnected?.()) {
+        if (window.WhatsHybridBridge?.isConnected()) {
             try {
                 const contacts = await window.WhatsHybridBridge.searchContacts(query);
                 results.contacts = contacts.slice(0, 5);
@@ -812,7 +812,7 @@ case 'export-data':
         }
 
         try {
-            await window.WhatsHybridBridge?.sendMessage?.(to, body);
+            await window.WhatsHybridBridge?.sendMessage(to, body);
             showToast('Mensagem enviada!', 'success');
             closeModal();
         } catch (e) {
@@ -871,7 +871,7 @@ case 'export-data':
         updateConnectionStatus('connecting');
 
         try {
-            await window.WhatsHybridBridge?.connect?.();
+            await window.WhatsHybridBridge?.connect();
             StateManager.setConnectionStatus('connected');
             updateConnectionStatus('connected');
         } catch (e) {
