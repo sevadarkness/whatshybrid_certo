@@ -6,6 +6,12 @@
  * gerenciados por crm_runtime.js, e exibe um quadro Kanban simples.
  */
 
+// Singleton guard
+if (window.__KANBAN_DASHBOARD_LOADED__) {
+  console.log('[Dashboard] Já carregado, ignorando...');
+} else {
+  window.__KANBAN_DASHBOARD_LOADED__ = true;
+
 class KanbanDashboard {
   constructor() {
     this.contacts = {};
@@ -876,3 +882,5 @@ document.addEventListener('DOMContentLoaded', () => {
   window.kanbanDashboard = new KanbanDashboard();
   window.kanbanDashboard.init();
 });
+
+} // End of singleton guard

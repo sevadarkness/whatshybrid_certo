@@ -793,14 +793,14 @@ function ensureCrmPanel() {
   `;
   document.body.appendChild(panel);
 
-  document.getElementById("whatsHybrid-crm-close").onclick = () => panel.remove();
-  document.getElementById("whatsHybrid-crm-open").onclick = () => {
+  document.getElementById("whatsHybrid-crm-close").addEventListener('click', () => panel.remove());
+  document.getElementById("whatsHybrid-crm-open").addEventListener('click', () => {
     chrome.runtime.sendMessage({ type: "OPEN_KANBAN_PAGE" });
-  };
-  document.getElementById("whatsHybrid-crm-save").onclick = () => saveCrmData();
+  });
+  document.getElementById("whatsHybrid-crm-save").addEventListener('click', () => saveCrmData());
   const licenseBtn = document.getElementById("whatsHybrid-license-validate");
   if (licenseBtn) {
-    licenseBtn.onclick = () => whValidateLicenseFromPanel();
+    licenseBtn.addEventListener('click', () => whValidateLicenseFromPanel());
   }
   whEnsureLicenseLoadedInPanel();
 
@@ -824,7 +824,7 @@ function ensureCrmPanel() {
     chip.textContent = tagName;
     chip.style.background = (typeof t === "object" && t && t.color) ? t.color : "#ffc107";
     chip.dataset.tagName = tagName;
-    chip.onclick = () => chip.classList.toggle("selected");
+    chip.addEventListener('click', () => chip.classList.toggle("selected"));
     tagsContainer.appendChild(chip);
   });
 
@@ -939,11 +939,11 @@ function ensureMagicWandButton() {
           </svg>
         </span>
       `;
-      wand.onclick = (e) => {
+      wand.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         aiSuggestReply();
-      };
+      });
     }
 
     // Inserir ao lado do botão "+" (upload)
@@ -996,9 +996,9 @@ function ensureAiAndQuickUI() {
       <ul id="whatsHybrid-quick-list"></ul>
     `;
     document.body.appendChild(qr);
-    document.getElementById("whatsHybrid-quick-close").onclick = () => {
+    document.getElementById("whatsHybrid-quick-close").addEventListener('click', () => {
       qr.style.display = "none";
-    };
+    });
   }
 }
 
@@ -1011,11 +1011,11 @@ function openQuickReplies() {
   replies.forEach((r) => {
     const li = document.createElement("li");
     li.textContent = r.key + " → " + r.msg.slice(0, 60);
-    li.onclick = () => {
+    li.addEventListener('click', () => {
       const text = fillTemplate(r.msg);
       fillMessageBox(text);
       qr.style.display = "none";
-    };
+    });
     list.appendChild(li);
   });
   qr.style.display = "block";
@@ -1120,9 +1120,9 @@ function ensureInsightsPanel() {
       </div>
     `;
     document.body.appendChild(panel);
-    document.getElementById("whatsHybrid-insights-close").onclick = () => {
+    document.getElementById("whatsHybrid-insights-close").addEventListener('click', () => {
       panel.style.display = "none";
-    };
+    });
   }
   return panel;
 }
@@ -1269,10 +1269,10 @@ function highlightImportantMessages(container) {
       const btnTask = document.createElement("button");
       btnTask.textContent = "T";
       btnTask.title = "Criar tarefa com base nesta mensagem";
-      btnTask.onclick = (e) => {
+      btnTask.addEventListener('click', (e) => {
         e.stopPropagation();
         createTaskFromMessage(text);
-      };
+      });
       wrapper.appendChild(btnTask);
       bubble.style.position = "relative";
       bubble.appendChild(wrapper);
@@ -1601,8 +1601,8 @@ setTimeout(createExtractorFAB, 3000);
                 SubscriptionUI.init();
             }
 
-            if (window.WhatsHybridBridge && typeof WhatsHybridBridge.init === 'function') {
-                await WhatsHybridBridge.init();
+            if (window.WhatsHybridBridge && typeof window.WhatsHybridBridge.init === 'function') {
+                await window.WhatsHybridBridge.init();
             }
 
             if (window.QuickActionsInjector && typeof QuickActionsInjector.init === 'function') {

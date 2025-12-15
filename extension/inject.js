@@ -107,21 +107,22 @@
         }
 
         waitForWhatsAppWeb() {
+            let attempts = 0;
+            const maxAttempts = 30; // 30 seconds
+            
             const checkInterval = setInterval(() => {
+                attempts++;
                 if (window.Store || window.require) {
                     clearInterval(checkInterval);
                     this.initializeIntegration();
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(checkInterval);
+                    if (!this.isInitialized) {
+                        console.warn('WhatsApp Web Store not detected after 30 seconds');
+                        this.sendToExtension('integration_failed', { error: 'WhatsApp Web Store not detected' });
+                    }
                 }
             }, 1000);
-
-            // Timeout after 30 seconds
-            setTimeout(() => {
-                clearInterval(checkInterval);
-                if (!this.isInitialized) {
-                    console.warn('WhatsApp Web not detected after 30 seconds');
-                    this.sendToExtension('integration_failed', { error: 'WhatsApp Web not detected' });
-                }
-            }, 30000);
         }
 
         initializeIntegration() {
