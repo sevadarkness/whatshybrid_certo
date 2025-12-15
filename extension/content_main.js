@@ -1052,6 +1052,7 @@ async function aiSuggestReply() {
     return;
   }
   const name = getCurrentContactName() || "Contato";
+  const chatExternalId = getCurrentChatIdFallback();
   try {
     const res = await fetch(`${config.backendUrl}/ai/reply`, {
       method: "POST",
@@ -1147,6 +1148,7 @@ async function aiConversationInsights() {
     return;
   }
   const name = getCurrentContactName() || "Contato";
+  const chatExternalId = getCurrentChatIdFallback();
   const panel = ensureInsightsPanel();
   const contentEl = document.getElementById("whatsHybrid-insights-content");
   panel.style.display = "block";
